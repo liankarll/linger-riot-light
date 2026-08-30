@@ -687,6 +687,7 @@
             <h1 class="display-md" id="ceremonyHeadline">roll is developing.</h1>
             <p class="body-txt" id="ceremonyBody">you can't see your photos yet. that is the whole idea.</p>
             <button class="btn btn-disabled" id="ceremonyCta" disabled>view roll</button>
+            <button class="btn btn-secondary on-dark hidden" id="ceremonyGalleryLink">view in gallery →</button>
             <button class="dev-link" id="ceremonyDevSkip">→ simulate time passing (dev)</button>
           </div>
           <div class="home-indicator"></div>
@@ -1222,6 +1223,7 @@
     var headline = document.getElementById('ceremonyHeadline');
     var body = document.getElementById('ceremonyBody');
     var cta = document.getElementById('ceremonyCta');
+    var galleryLink = document.getElementById('ceremonyGalleryLink');
     var name = roll.name.toLowerCase();
 
     if (roll.status === 'developed'){
@@ -1235,6 +1237,7 @@
       cta.disabled = false;
       cta.textContent = 'back to camera';
       cta.onclick = function(){ renderHome(); showView('home'); };
+      galleryLink.classList.add('hidden');
     } else {
       var remain = (roll.filledAtMs + roll.revealDelayHours*3600*1000) - nowMs();
       visual.className = 'ceremony-visual';
@@ -1247,6 +1250,8 @@
       cta.disabled = true;
       cta.textContent = 'view roll';
       cta.onclick = null;
+      galleryLink.classList.remove('hidden');
+      galleryLink.onclick = function(){ enterGallery(roll.id); };
     }
   }
   document.getElementById('ceremonyDevSkip').addEventListener('click', function(){
