@@ -1237,6 +1237,7 @@
       cta.disabled = false;
       cta.textContent = 'back to camera';
       cta.onclick = function(){ renderHome(); showView('home'); };
+      cta.classList.remove('hidden');
       galleryLink.classList.add('hidden');
     } else {
       var remain = (roll.filledAtMs + roll.revealDelayHours*3600*1000) - nowMs();
@@ -1246,10 +1247,9 @@
       statusLine.style.color = 'var(--acid)';
       headline.textContent = name + ' is developing.';
       body.textContent = "you can't see your photos yet. that is the whole idea.";
-      cta.className = 'btn btn-disabled';
-      cta.disabled = true;
-      cta.textContent = 'view roll';
+      cta.classList.add('hidden');
       cta.onclick = null;
+      galleryLink.className = 'btn btn-primary';
       galleryLink.classList.remove('hidden');
       galleryLink.onclick = function(){ enterGallery(roll.id); };
     }
