@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Linger — New User</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --acid:#FF6A18;
+    --acid-press:#EE5F10;
+    --spark:#FFC93D;
+    --grape:#7B35BF;
+    --glacier:#7FA6C4;
+    --paper:#FFFDF5;
+    --midnight:#17122B;
+    --muted:#6F6885;
+    --muted-inverse:#9A93AE;
+    --body-inverse:#CFC9DC;
+    --hairline:#E4DECD;
+    --hairline-inverse:#33294F;
+    --track:#F1EBD9;
+    --on-acid:#FFFDF5;
+    --on-spark:#17122B;
+    --on-grape:#FFFDF5;
+    --on-midnight:#FFFDF5;
+
+    --f-display:'Bricolage Grotesque', sans-serif;
+    --f-body:'Space Grotesk', system-ui, sans-serif;
+    --f-mono:'IBM Plex Mono', monospace;
+
+    --r-block:22px;
+    --r-inner:14px;
+    --r-full:999px;
+    --r-device:48px;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--paper);
+    color:var(--midnight);
+    font-family:var(--f-body);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow-x:hidden;
+    padding:32px 16px;
+  }
+
+  .stage{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+  }
+
+  .stage-label{
+    font-family:var(--f-mono);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .wordmark{
+    font-family:var(--f-display);
+    font-weight:800;
+    font-size:18px;
+    letter-spacing:-0.05em;
+    text-transform:lowercase;
+    color:var(--midnight);
+  }
+  .stage-label .tag{
+    background:var(--grape);
+    color:var(--on-grape);
+    padding:3px 10px;
+    border-radius:var(--r-full);
+    font-size:10px;
+  }
+
+  .device-wrap{
+    width:393px;
+    height:852px;
+  }
+  .device{
+    width:393px;
+    height:852px;
+    background:var(--midnight);
+    border-radius:var(--r-device);
+    padding:14px;
+    transform-origin:top center;
+  }
+  .screen{
+    position:relative;
+    width:100%;
+    height:100%;
+    background:var(--paper);
+    border-radius:calc(var(--r-device) - 20px);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .statusbar{
+    height:44px;
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 24px;
+    font-family:var(--f-mono);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.08em;
+    color:var(--midnight);
+    z-index:5;
+  }
+  .screen.dark .statusbar{ color:var(--paper); }
+  .home-indicator{
+    position:absolute;
+    bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
+    width:134px;
+    height:5px;
+    border-radius:var(--r-full);
+    background:var(--midnight);
+    opacity:0.25;
+    z-index:20;
+  }
+  .screen.dark .home-indicator{ background:var(--paper); opacity:0.4; }
+
+  .view{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    background:var(--paper);
+  }
+  .view.hidden{ display:none; }
+  .hidden{ display:none !important; }
+  .view.dark{ background:var(--midnight); }
+
+  .content{
+    flex:1 1 auto;
+    overflow-y:auto;
+    padding:0 20px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  /* ---------- typography ---------- */
+  .display-md{ font-family:var(--f-display); font-weight:800; font-size:34px; line-height:1.0; letter-spacing:-0.035em; text-transform:lowercase; text-wrap:balance; margin:0; }
+  .display-sm{ font-family:var(--f-display); font-weight:800; font-size:20px; line-height:1.05; letter-spacing:-0.03em; text-transform:lowercase; margin:0; }
+  .lead{ font-family:var(--f-body); font-size:16px; line-height:1.4; margin:0; color:var(--midnight); }
+  .body-txt{ font-family:var(--f-body); font-size:14px; line-height:1.55; margin:0; color:var(--muted); }
+  .view.dark .body-txt{ color:var(--body-inverse); }
+  .label{ font-family:var(--f-mono); font-size:11px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+  .view.dark .label{ color:var(--muted-inverse); }
+  .counter{ font-family:var(--f-mono); font-size:15px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; }
+  .status-line{ font-family:var(--f-mono); font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--acid); }
+
+  /* ---------- header ---------- */
+  .home-header{
+    padding:6px 20px 4px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    font-family:var(--f-mono);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    height:48px;
+    padding:0 26px;
+    border-radius:var(--r-full);
+    border:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:background-color 150ms ease-out, opacity 150ms ease-out;
+  }
+  .btn-primary{ background:var(--acid); color:var(--on-acid); }
+  .btn-primary:active{ background:var(--acid-press); }
+  .btn-secondary{ background:var(--paper); color:var(--midnight); border:2px solid var(--midnight); }
+  .btn-secondary.on-dark{ background:transparent; color:var(--paper); border-color:var(--paper); }
+  .btn-share{ background:var(--grape); color:var(--on-grape); }
+  .btn-disabled{ background:var(--paper); color:var(--muted); border:2px dashed var(--hairline); cursor:not-allowed; }
+  .btn-small{ height:38px; padding:0 18px; font-size:11px; }
+  .btn:disabled{ opacity:1; }
+
+  .icon-btn{
+    width:40px; height:40px;
+    border-radius:var(--r-full);
+    border:none;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent;
+    color:var(--midnight);
+    cursor:pointer;
+  }
+  .view.dark .icon-btn{ color:var(--paper); background:rgba(255,255,255,0.08); }
+
+  /* ---------- colour block ---------- */
+  .block{
+    border-radius:var(--r-block);
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    cursor:pointer;
+    border:none;
+    text-align:left;
+    width:100%;
+    font-family:inherit;
+  }
+  .block-acid{ background:var(--acid); color:var(--on-acid); }
+  .block-acid .label{ color:rgba(255,253,245,0.75); }
+  .block-acid .lead{ color:var(--on-acid); }
+  .block-acid .display-sm{ color:var(--on-acid); }
+
+  /* ---------- card ---------- */
+  .card{
+    background:var(--paper);
+    border:1px solid var(--hairline);
+    border-radius:var(--r-block);
+    padding:16px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+    cursor:pointer;
+  }
+  .card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .thumb-row{
+    display:flex;
+    gap:4px;
+    flex:0 0 auto;
+  }
+  .thumb{
+    width:36px;
+    aspect-ratio:1.43/1;
+    border-radius:6px;
+    object-fit:cover;
+    background:var(--track);
+  }
+  .locked-block{
+    width:158px;
+    aspect-ratio:1.43/1;
+    border-radius:var(--r-inner);
+    border:2px dashed var(--hairline);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    flex:0 0 auto;
+    background:var(--paper);
+  }
+  .card-info{ display:flex; flex-direction:column; gap:4px; flex:1 1 auto; min-width:0; }
+
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    font-family:var(--f-mono);
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    padding:5px 10px;
+    border-radius:var(--r-full);
+    width:fit-content;
+  }
+  .tag-spark{ background:var(--spark); color:var(--on-spark); }
+  .tag-archived{ background:var(--paper); color:var(--muted); border:1px solid var(--hairline); }
+  .tag-developing{ background:var(--paper); color:var(--acid); border:1px solid var(--hairline); }
+
+  /* ---------- Camera Home ---------- */
+  #view-home .content{ padding-top:4px; }
+  .rolls-heading{ display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+
+  /* ---------- Full Camera ---------- */
+  #view-camera .viewfinder-wrap{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 14px;
+    overflow:hidden;
+  }
+  .viewfinder{
+    position:relative;
+    flex-shrink:0;
+    background:#000;
+    border-radius:var(--r-inner);
+    overflow:hidden;
+    border:1px solid var(--hairline-inverse);
+  }
+  .viewfinder video, .viewfinder img.captured-preview{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .viewfinder .grid{
+    position:absolute; inset:0;
+    pointer-events:none;
+  }
+  .viewfinder .grid .line{
+    position:absolute;
+    background:rgba(207,201,220,0.35);
+  }
+  .viewfinder .reticle{
+    position:absolute;
+    top:50%; left:50%;
+    width:22px; height:22px;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+  }
+  .viewfinder .reticle::before,.viewfinder .reticle::after{
+    content:'';
+    position:absolute;
+    background:var(--acid);
+  }
+  .viewfinder .reticle::before{ top:50%; left:0; width:100%; height:1.5px; transform:translateY(-50%); }
+  .viewfinder .reticle::after{ left:50%; top:0; height:100%; width:1.5px; transform:translateX(-50%); }
+  .corner{ position:absolute; width:22px; height:22px; pointer-events:none; }
+  .corner.tl{ top:10px; left:10px; border-top:2px solid var(--paper); border-left:2px solid var(--paper); }
+  .corner.tr{ top:10px; right:10px; border-top:2px solid var(--paper); border-right:2px solid var(--paper); }
+  .corner.bl{ bottom:10px; left:10px; border-bottom:2px solid var(--paper); border-left:2px solid var(--paper); }
+  .corner.br{ bottom:10px; right:10px; border-bottom:2px solid var(--paper); border-right:2px solid var(--paper); }
+  .flash{
+    position:absolute; inset:0;
+    background:var(--paper);
+    opacity:0;
+    pointer-events:none;
+  }
+  .flash.hit{ animation:flashpop 160ms ease-out; }
+  @keyframes flashpop{ 0%{opacity:0.9;} 100%{opacity:0;} }
+  .empty-frame{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+    background:var(--midnight);
+    color:var(--muted-inverse);
+  }
+
+  .camera-topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:8px 16px 4px;
+  }
+  .chip{
+    font-family:var(--f-mono); font-size:12px; font-weight:600; letter-spacing:0.1em;
+    background:rgba(255,255,255,0.08);
+    color:var(--paper);
+    padding:8px 14px;
+    border-radius:var(--r-full);
+  }
+  .chip .dim{ color:var(--muted-inverse); }
+
+  .shutter-row{
+    padding:24px 0 34px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .shutter{
+    width:74px; height:74px;
+    border-radius:var(--r-full);
+    background:var(--acid);
+    border:5px solid var(--paper);
+    cursor:pointer;
+  }
+  .shutter:active{ background:var(--acid-press); }
+  .shutter:disabled{ background:var(--muted); opacity:0.5; cursor:not-allowed; }
+
+  /* ---------- Ceremony ---------- */
+  #view-ceremony .content{
+    flex:1 1 auto;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:18px;
+    padding:20px 30px;
+  }
+  #view-ceremony .display-md{ color:var(--paper); }
+  .ceremony-visual{
+    width:150px;
+    aspect-ratio:1.43/1;
+    border-radius:var(--r-inner);
+    border:2px dashed var(--hairline-inverse);
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.03);
+    margin-bottom:6px;
+  }
+  .ceremony-visual.developed{ border-style:solid; border-color:var(--spark); overflow:hidden; }
+  .ceremony-visual.developed img{ width:100%; height:100%; object-fit:cover; }
+  .dev-link{
+    font-family:var(--f-mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--muted-inverse); background:none; border:none; cursor:pointer; margin-top:10px;
+    text-decoration:underline;
+  }
+
+  /* ---------- New roll sheet ---------- */
+  .scrim{
+    position:absolute; inset:0;
+    background:rgba(23,18,43,0.45);
+    z-index:30;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 160ms ease-out;
+  }
+  .scrim.show{ opacity:1; pointer-events:auto; }
+  .sheet{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    background:var(--paper);
+    border-radius:24px 24px 0 0;
+    padding:22px 20px 30px;
+    z-index:31;
+    transform:translateY(100%);
+    transition:transform 200ms ease-out;
+    display:flex; flex-direction:column; gap:16px;
+    box-sizing:border-box;
+  }
+  .sheet.show{ transform:translateY(0); }
+  .sheet-handle{ width:36px; height:4px; border-radius:var(--r-full); background:var(--hairline); margin:0 auto; }
+  .field-label{ font-family:var(--f-mono); font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); }
+  .text-input{
+    font-family:var(--f-body); font-size:16px; color:var(--midnight);
+    background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-inner);
+    padding:12px 14px; width:100%;
+  }
+  .text-input:focus{ outline:none; border-color:var(--midnight); }
+  .toggle-row{ display:flex; gap:10px; }
+  .toggle-opt{
+    flex:1; text-align:center; padding:12px 0; border-radius:var(--r-full);
+    border:2px solid var(--hairline); font-family:var(--f-mono); font-size:12px; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; color:var(--midnight);
+    background:var(--paper);
+  }
+  .toggle-opt.active{ background:var(--midnight); border-color:var(--midnight); color:var(--paper); }
+
+  /* ---------- Print Lab stub ---------- */
+  #view-print .content{ align-items:stretch; justify-content:flex-start; padding-top:8px; }
+  .empty-state{
+    background:var(--paper);
+    border:2px dashed var(--hairline);
+    border-radius:var(--r-block);
+    padding:28px 20px;
+    text-align:center;
+    display:flex; flex-direction:column; gap:8px; align-items:center;
+    margin-top:40px;
+  }
+
+  /* ---------- tab bar ---------- */
+  .tabbar{
+    flex:0 0 auto;
+    display:flex;
+    border-top:1px solid var(--hairline);
+    padding:10px 0 26px;
+    background:var(--paper);
+  }
+  .tab{
+    flex:1;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:none; border:none; cursor:pointer;
+    font-family:var(--f-mono); font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--muted);
+  }
+  .tab.active{ color:var(--midnight); }
+  .tab svg{ display:block; }
+
+  .toast{
+    position:absolute;
+    left:50%; bottom:118px;
+    transform:translate(-50%,10px);
+    background:var(--midnight);
+    color:var(--paper);
+    font-family:var(--f-mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    padding:10px 16px;
+    border-radius:var(--r-full);
+    opacity:0;
+    transition:opacity 160ms ease-out, transform 160ms ease-out;
+    z-index:40;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+
+  /* ---------- shared light-view header ---------- */
+  .view-header{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 14px 4px;
+  }
+  .view-header .label{ flex:1 1 auto; text-align:center; margin-right:40px; color:var(--midnight); }
+
+  /* ---------- chip row ---------- */
+  .chip-scroll-sticky{ flex:0 0 auto; background:var(--paper); border-bottom:1px solid var(--hairline); }
+  .tray-status-bar{
+    flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;
+    padding:12px 20px; border-top:1px solid var(--hairline); background:var(--paper);
+  }
+  .tray-status-bar .btn{ flex:1; }
+  .chip-scroll{ display:flex; gap:8px; overflow-x:auto; padding:6px 20px 10px; scrollbar-width:none; -ms-overflow-style:none; }
+  .chip-scroll::-webkit-scrollbar{ display:none; }
+  .chip-pill{
+    flex:0 0 auto; padding:8px 16px; border-radius:var(--r-full);
+    border:1px solid var(--hairline); font-family:var(--f-mono); font-size:11px; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--midnight); background:var(--paper);
+    cursor:pointer; white-space:nowrap;
+  }
+  .chip-pill.active{ background:var(--midnight); color:var(--paper); border-color:var(--midnight); }
+
+  /* ---------- photo grid (Gallery) ---------- */
+  .photo-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .photo-tile{ position:relative; aspect-ratio:1.43/1; border-radius:10px; overflow:hidden; background:var(--track); cursor:pointer; border:none; padding:0; }
+  .photo-tile img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-tile .print-check{
+    position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:50%;
+    background:rgba(23,18,43,0.55); color:var(--paper); display:flex; align-items:center; justify-content:center;
+    font-size:13px; border:1.5px solid rgba(255,253,245,0.7); cursor:pointer;
+  }
+  .photo-tile .print-check.queued{ background:var(--acid); border-color:var(--acid); }
+  .blurred-photo{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    filter:blur(16px) saturate(0.85); transform:scale(1.25);
+  }
+  .lock-overlay{
+    position:absolute; inset:0; background:rgba(23,18,43,0.6); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:4px; color:var(--muted-inverse); text-align:center; padding:6px;
+  }
+  .lock-overlay .status-line{ font-size:9px; letter-spacing:0.1em; }
+
+  /* ---------- Single Photo ---------- */
+  #view-photo .content{ padding:0 0 20px; gap:0; }
+  .photo-hero-wrap{ padding:8px 20px 0; }
+  .photo-hero{ width:100%; aspect-ratio:1.43/1; border-radius:var(--r-inner); overflow:hidden; background:var(--track); }
+  .photo-hero img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .filmstrip{ display:flex; gap:6px; overflow-x:auto; padding:14px 20px; scrollbar-width:none; -ms-overflow-style:none; }
+  .filmstrip::-webkit-scrollbar{ display:none; }
+  .filmstrip .fthumb{ flex:0 0 auto; width:44px; aspect-ratio:1.43/1; border-radius:6px; object-fit:cover; opacity:0.45; cursor:pointer; border:2px solid transparent; display:block; }
+  .filmstrip .fthumb.active{ opacity:1; border-color:var(--acid); }
+  .photo-actions{ display:flex; gap:10px; padding:4px 20px 0; }
+  .photo-actions .btn{ flex:1; }
+  .photo-actions .icon-btn{ flex:0 0 auto; border:2px solid var(--hairline); }
+
+  /* ---------- Print Lab ---------- */
+  #view-print .content{ padding-top:8px; }
+  .lab-full-content{ display:flex; flex-direction:column; gap:16px; }
+  .lab-stats{ display:flex; align-items:center; justify-content:space-between; }
+  .section-heading{ display:flex; align-items:center; justify-content:space-between; margin-top:6px; }
+  .order-card{ background:var(--paper); border:1px solid var(--hairline); border-radius:var(--r-inner); padding:14px; display:flex; flex-direction:column; gap:8px; cursor:pointer; }
+  .order-card-head{ display:flex; align-items:center; justify-content:space-between; }
+  .tray-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .tray-slot{ position:relative; aspect-ratio:1.43/1; border-radius:10px; overflow:hidden; background:var(--paper); border:2px dashed var(--hairline); }
+  .tray-slot.filled{ border-style:solid; border-color:var(--hairline); }
+  .tray-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .tray-slot .slot-remove{
+    position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%;
+    background:rgba(23,18,43,0.72); color:var(--paper); font-size:11px; display:flex; align-items:center;
+    justify-content:center; border:none; cursor:pointer; line-height:1;
+  }
+  .recent-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-top:1px solid var(--hairline); }
+  .recent-row:first-child{ border-top:none; }
+
+  /* ---------- sheet header (order flow) ---------- */
+  .sheet-header{ display:flex; align-items:center; gap:10px; }
+  .sheet-header .icon-btn{ width:32px; height:32px; border:1px solid var(--hairline); }
+  .summary-row{ display:flex; justify-content:space-between; font-family:var(--f-body); font-size:14px; padding:6px 0; }
+  .summary-row .k{ color:var(--muted); }
+  .progress-track{ height:12px; background:var(--track); border-radius:var(--r-full); overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--acid); border-radius:var(--r-full); width:0%; transition:width 100ms linear; }
+  .photo-grid-sheet{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; max-height:340px; overflow-y:auto; }
+  .photo-grid-sheet img{ width:100%; aspect-ratio:1.43/1; object-fit:cover; border-radius:8px; display:block; }
+
+  /* ---------- confirm dialog ---------- */
+  .dialog{
+    position:absolute; left:24px; right:24px; top:50%;
+    background:var(--paper); border-radius:var(--r-block); padding:24px;
+    z-index:33; opacity:0; pointer-events:none;
+    transform:translateY(-50%) scale(0.96);
+    transition:opacity 160ms ease-out, transform 160ms ease-out;
+    display:flex; flex-direction:column; gap:16px;
+  }
+  .dialog.show{ opacity:1; pointer-events:auto; transform:translateY(-50%) scale(1); }
+  .dialog-actions{ display:flex; gap:10px; }
+  .dialog-actions .btn{ flex:1; }
+
+  input[type=file]{ display:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="stage-label"><span class="wordmark">linger</span><span class="tag">new user</span></div>
+  <div class="device-wrap" id="deviceWrap">
+    <div class="device" id="device">
+      <div class="screen" id="screen">
+
+        <!-- ============ CAMERA HOME ============ -->
+        <div class="view" id="view-home">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="home-header">
+            <div class="wordmark">linger</div>
+            <button class="btn btn-secondary btn-small" id="btnNewRoll">+ new</button>
+          </div>
+          <div class="content">
+            <button class="block block-acid" id="activeRollBlock">
+              <div class="label">ACTIVE ROLL</div>
+              <div class="display-sm" id="activeRollName">—</div>
+              <div class="lead" id="activeRollStatus">no active roll</div>
+            </button>
+
+            <div class="rolls-heading">
+              <div class="label">ALL ROLLS</div>
+              <button class="dev-link" id="btnAllPhotos" style="color:var(--acid); text-decoration:none;">view all photos →</button>
+            </div>
+            <div id="rollList" style="display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+          <div class="tabbar">
+            <button class="tab active" data-tab="home"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg><span>camera</span></button>
+            <button class="tab" data-tab="print"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="6" rx="1"/><path d="M6 17H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg><span>print lab</span></button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
+        <!-- ============ FULL CAMERA ============ -->
+        <div class="view dark hidden" id="view-camera">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="camera-topbar">
+            <button class="icon-btn" id="btnCloseCamera">✕</button>
+            <div class="chip"><span id="camCounterFilled">0</span><span class="dim">/27</span></div>
+            <div style="width:40px"></div>
+          </div>
+          <div class="label" id="camRollName" style="text-align:center; padding:2px 0 4px;">ROLL 02</div>
+          <div class="viewfinder-wrap" id="viewfinderWrap">
+            <div class="viewfinder" id="viewfinder">
+              <video id="video" autoplay playsinline muted></video>
+              <img class="captured-preview hidden" id="capturedPreview" alt="" />
+              <div class="empty-frame hidden" id="cameraFallbackNote">
+                <div class="label">TAP SHUTTER TO USE DEVICE CAMERA</div>
+              </div>
+              <div class="grid">
+                <div class="line" style="left:33.33%; top:0; bottom:0; width:1px;"></div>
+                <div class="line" style="left:66.66%; top:0; bottom:0; width:1px;"></div>
+                <div class="line" style="top:33.33%; left:0; right:0; height:1px;"></div>
+                <div class="line" style="top:66.66%; left:0; right:0; height:1px;"></div>
+              </div>
+              <div class="corner tl"></div><div class="corner tr"></div>
+              <div class="corner bl"></div><div class="corner br"></div>
+              <div class="reticle"></div>
+              <div class="flash" id="flashEl"></div>
+            </div>
+          </div>
+          <div class="shutter-row">
+            <button class="shutter" id="btnShutter" aria-label="Capture"></button>
+          </div>
+          <input type="file" id="fileFallback" accept="image/*" capture="environment" />
+          <div class="home-indicator"></div>
+        </div>
+
+        <!-- ============ ROLL READY CEREMONY ============ -->
+        <div class="view dark hidden" id="view-ceremony">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="content">
+            <div class="ceremony-visual" id="ceremonyVisual"></div>
+            <div class="status-line" id="ceremonyStatusLine">DEVELOPING</div>
+            <h1 class="display-md" id="ceremonyHeadline">roll is developing.</h1>
+            <p class="body-txt" id="ceremonyBody">you can't see your photos yet. that is the whole idea.</p>
+            <button class="btn btn-disabled" id="ceremonyCta" disabled>view roll</button>
+            <button class="dev-link" id="ceremonyDevSkip">→ simulate time passing (dev)</button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
+        <!-- ============ GALLERY ============ -->
+        <div class="view hidden" id="view-gallery">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="view-header">
+            <button class="icon-btn" id="btnGalleryBack">←</button>
+            <div class="label">GALLERY</div>
+          </div>
+          <div class="chip-scroll-sticky">
+            <div class="chip-scroll" id="galleryChips"></div>
+          </div>
+          <div class="content" style="padding-top:14px;">
+            <div class="photo-grid" id="galleryGrid"></div>
+          </div>
+          <div class="tray-status-bar">
+            <div class="label" id="galleryTrayCount">0/12 added to print tray</div>
+            <button class="btn btn-primary btn-small hidden" id="btnGoToPrintLab">go to print lab →</button>
+          </div>
+          <div class="tabbar">
+            <button class="tab" data-tab="home"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg><span>camera</span></button>
+            <button class="tab" data-tab="print"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="6" rx="1"/><path d="M6 17H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg><span>print lab</span></button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
+        <!-- ============ SINGLE PHOTO ============ -->
+        <div class="view hidden" id="view-photo">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="view-header">
+            <button class="icon-btn" id="btnPhotoBack">←</button>
+            <div class="label" id="photoPosition">1/27</div>
+          </div>
+          <div class="content">
+            <div class="photo-hero-wrap">
+              <div class="photo-hero"><img id="photoHeroImg" alt="" /></div>
+            </div>
+            <div class="filmstrip" id="photoFilmstrip"></div>
+            <div class="photo-actions">
+              <button class="btn btn-secondary" id="btnPhotoPrintToggle">add to print tray</button>
+              <button class="icon-btn" id="btnPhotoRemove" aria-label="Remove frame">🗑</button>
+            </div>
+          </div>
+          <div class="tray-status-bar">
+            <div class="label" id="photoTrayCount">0/12 added to print tray</div>
+            <button class="btn btn-primary btn-small hidden" id="btnPhotoGoToPrintLab">go to print lab →</button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
+        <!-- ============ PRINT LAB ============ -->
+        <div class="view hidden" id="view-print">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="home-header">
+            <div class="wordmark">linger</div>
+            <div style="width:40px"></div>
+          </div>
+          <div class="content">
+            <div class="empty-state hidden" id="labEmpty">
+              <div class="display-sm">nothing to print yet.</div>
+              <p class="body-txt">finish a roll first — prints show up here once you're ready to order.</p>
+            </div>
+
+            <div id="labFull" class="hidden lab-full-content">
+              <div class="lab-stats">
+                <div class="label" id="labSlotStat">0 OF 12 SLOTS MARKED</div>
+                <div class="label" style="color:var(--muted)">STANDARD 3R</div>
+              </div>
+
+              <div id="printingSection" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+              <div class="section-heading">
+                <div class="label">FINISH</div>
+              </div>
+              <div class="toggle-row" id="finishToggleRow">
+                <div class="toggle-opt active" data-finish="matte">matte</div>
+                <div class="toggle-opt" data-finish="glossy">glossy</div>
+              </div>
+
+              <div class="section-heading">
+                <div class="label">TRAY</div>
+              </div>
+              <div class="tray-grid" id="trayGrid"></div>
+              <button class="btn btn-disabled" id="btnPrintMemories" disabled style="width:100%;">print my memories</button>
+
+              <div id="recentSection" style="display:none; flex-direction:column; margin-top:8px;">
+                <div class="label" style="margin-bottom:4px;">RECENT</div>
+                <div id="recentList"></div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <button class="tab" data-tab="home"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg><span>camera</span></button>
+            <button class="tab active" data-tab="print"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="6" rx="1"/><path d="M6 17H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg><span>print lab</span></button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
+        <!-- ============ OVERLAYS ============ -->
+        <div class="scrim" id="scrim"></div>
+
+        <div class="sheet" id="newRollSheet">
+          <div class="sheet-handle"></div>
+          <div class="label">NEW ROLL</div>
+          <div>
+            <div class="field-label" style="margin-bottom:8px;">name</div>
+            <input class="text-input" id="newRollName" placeholder="Roll 03" />
+          </div>
+          <div>
+            <div class="field-label" style="margin-bottom:8px;">reveal delay</div>
+            <div class="toggle-row" id="delayToggleRow">
+              <div class="toggle-opt active" data-delay="24">24 hours</div>
+              <div class="toggle-opt" data-delay="48">48 hours</div>
+            </div>
+          </div>
+          <p class="body-txt" style="color:var(--muted)">27 exposures. the timer starts the moment the roll fills, not now.</p>
+          <button class="btn btn-primary" id="btnCreateRoll">create &amp; start shooting</button>
+        </div>
+
+        <div class="sheet" id="orderSheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-header">
+            <button class="icon-btn" id="btnOrderBack">←</button>
+            <div class="label" id="orderStepLabel">FULFILLMENT</div>
+          </div>
+          <div id="orderSheetBody"></div>
+        </div>
+
+        <div class="sheet" id="orderPhotosSheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-header">
+            <div style="flex:1">
+              <div class="display-sm" id="opAlbumName" style="font-size:17px;">album</div>
+              <div class="label" id="opMeta" style="margin-top:2px;">CODE · LOCATION</div>
+            </div>
+          </div>
+          <div class="photo-grid-sheet" id="opGrid"></div>
+        </div>
+
+        <div class="dialog" id="confirmDialog">
+          <div class="display-sm" id="confirmTitle" style="font-size:19px;">are you sure?</div>
+          <p class="body-txt" id="confirmBody" style="color:var(--muted)"></p>
+          <div class="dialog-actions">
+            <button class="btn btn-secondary" id="confirmCancel">cancel</button>
+            <button class="btn btn-primary" id="confirmOk">confirm</button>
+          </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var PLACEHOLDER_IMG = "000028.JPG"; // seed placeholder, same dir as this file when opened locally
+  var EXPOSURES_TOTAL = 27;
+
+  var state = {
+    rolls: [],
+    nextRollNumber: 1,
+    activeRollId: null,
+    currentCameraRollId: null,
+    currentCeremonyRollId: null,
+    stream: null,
+    pendingCapture: null, // {rollId, canvasDataUrl} awaiting confirm — kept simple: auto-commit on capture
+
+    galleryFilter: 'all',      // 'all' or a rollId
+    photoRollId: null,
+    photoIndex: 0,
+
+    printTray: [],             // [{rollId, photoId, url}], max 12
+    finish: 'matte',
+    orders: [],                // [{id, name, count, finish, location, placedAtMs, readyAtMs, pickupCode, photos}]
+    draftOrder: { name:'', location:null, paymentMethod:null },
+    orderStep: 'fulfillment'
+  };
+  var PRICE_PER_PRINT = 10;
+  var TRAY_SIZE = 12;
+  var ORDER_READY_HOURS = 48;
+
+  function nowMs(){ return Date.now(); }
+
+  function makeSeedPhotos(count){
+    var arr = [];
+    for (var i=0;i<count;i++){
+      arr.push({ id: 'seed-'+i, url: PLACEHOLDER_IMG, capturedAtMs: nowMs() - (count-i)*60000 });
+    }
+    return arr;
+  }
+
+  function seed(){
+    // blank slate: brand-new user, no rolls yet
+  }
+  seed();
+
+  function getRoll(id){ return state.rolls.find(function(r){ return r.id===id; }); }
+  function activeRoll(){ return state.activeRollId ? getRoll(state.activeRollId) : null; }
+
+  function isDeveloped(roll){
+    if (roll.status !== 'full' && roll.status !== 'developed') return false;
+    if (!roll.filledAtMs) return false;
+    return nowMs() >= roll.filledAtMs + roll.revealDelayHours*3600*1000;
+  }
+  function refreshDerivedStatus(roll){
+    if (roll.status === 'full' && isDeveloped(roll)) roll.status = 'developed';
+  }
+
+  var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function fmtRollDate(ms){
+    var d = new Date(ms);
+    return MONTH_NAMES[d.getMonth()] + " '" + String(d.getFullYear()).slice(-2);
+  }
+  function fmtCountdown(ms){
+    if (ms < 0) ms = 0;
+    var totalMin = Math.floor(ms/60000);
+    var h = Math.floor(totalMin/60);
+    var m = totalMin % 60;
+    return h + 'H ' + (m<10?'0':'') + m + 'M';
+  }
+
+  // ---------------- views ----------------
+  var views = ['home','camera','ceremony','print','gallery','photo'];
+  function showView(name){
+    views.forEach(function(v){
+      document.getElementById('view-'+v).classList.toggle('hidden', v!==name);
+    });
+    if (name === 'camera') startCamera(); else stopCamera();
+  }
+
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._h);
+    showToast._h = setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  // ---------------- tab bar ----------------
+  document.querySelectorAll('.tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var tab = btn.getAttribute('data-tab');
+      if (tab === 'print'){ renderPrintLab(); showView('print'); }
+      else { renderHome(); showView('home'); }
+    });
+  });
+
+  // ---------------- render home ----------------
+  function renderHome(){
+    var roll = activeRoll();
+    var block = document.getElementById('activeRollBlock');
+    if (roll){
+      refreshDerivedStatus(roll);
+      var remaining = roll.exposuresTotal - roll.photos.length;
+      document.getElementById('activeRollName').textContent = roll.name.toLowerCase();
+      document.getElementById('activeRollStatus').textContent = remaining + ' frames left · tap to shoot';
+      block.style.display = 'flex';
+    } else {
+      document.getElementById('activeRollName').textContent = 'no active roll';
+      document.getElementById('activeRollStatus').textContent = "start a new roll and let moments linger.";
+      block.style.display = 'flex';
+    }
+
+    var list = document.getElementById('rollList');
+    list.innerHTML = '';
+    state.rolls.slice().sort(function(a,b){ return b.number-a.number; }).forEach(function(r){
+      refreshDerivedStatus(r);
+      var card = document.createElement('div');
+      card.className = 'card';
+
+      var visual;
+      if (r.status === 'developed'){
+        visual = document.createElement('div');
+        visual.className = 'thumb-row';
+        r.photos.slice(0,4).forEach(function(p){
+          var img = document.createElement('img');
+          img.className = 'thumb'; img.src = p.url; img.alt='';
+          img.onerror = function(){ img.style.background = 'var(--track)'; img.removeAttribute('src'); };
+          visual.appendChild(img);
+        });
+      } else {
+        visual = document.createElement('div');
+        visual.className = 'locked-block';
+        var lbl = document.createElement('div');
+        lbl.className = 'label'; lbl.style.fontSize='9px'; lbl.textContent = 'LOCKED';
+        var cnt = document.createElement('div');
+        cnt.className = 'counter'; cnt.style.fontSize='11px'; cnt.textContent = r.photos.length+'/'+r.exposuresTotal;
+        visual.appendChild(lbl); visual.appendChild(cnt);
+      }
+
+      var info = document.createElement('div');
+      info.className = 'card-info';
+      var num = document.createElement('div'); num.className='label'; num.textContent = fmtRollDate(r.createdAtMs);
+      var nm = document.createElement('div'); nm.className='display-sm'; nm.style.fontSize='16px'; nm.textContent = r.name.toLowerCase();
+      var tag = document.createElement('div');
+      if (r.status === 'developed'){ tag.className='tag tag-spark'; tag.textContent='developed'; }
+      else if (r.status === 'full'){
+        tag.className='tag tag-developing';
+        var remain = (r.filledAtMs + r.revealDelayHours*3600*1000) - nowMs();
+        tag.textContent = 'developing · ' + fmtCountdown(remain);
+      } else {
+        tag.className='tag tag-archived'; tag.textContent = 'shooting · ' + (r.exposuresTotal-r.photos.length) + ' left';
+      }
+      info.appendChild(num); info.appendChild(nm); info.appendChild(tag);
+
+      card.appendChild(visual); card.appendChild(info);
+      card.addEventListener('click', function(){
+        if (r.status === 'active'){
+          state.activeRollId = r.id;
+          enterCamera(r.id);
+        } else if (r.status === 'full'){
+          enterCeremony(r.id);
+        } else {
+          enterGallery(r.id);
+        }
+      });
+      list.appendChild(card);
+    });
+    if (state.rolls.length === 0){
+      var emptyRolls = document.createElement('div');
+      emptyRolls.className = 'empty-state';
+      emptyRolls.innerHTML = '<div class="display-sm" style="font-size:17px;">no rolls yet.</div><p class="body-txt">tap + new to load your first roll and start shooting.</p>';
+      list.appendChild(emptyRolls);
+    }
+  }
+
+  document.getElementById('activeRollBlock').addEventListener('click', function(){
+    var roll = activeRoll();
+    if (roll) enterCamera(roll.id);
+    else openNewRollSheet();
+  });
+
+  // ---------------- generic overlay (sheets + dialog) ----------------
+  var openOverlayId = null;
+  function openOverlay(id){
+    document.getElementById('scrim').classList.add('show');
+    document.getElementById(id).classList.add('show');
+    openOverlayId = id;
+  }
+  function closeOverlay(){
+    if (openOverlayId) document.getElementById(openOverlayId).classList.remove('show');
+    document.getElementById('scrim').classList.remove('show');
+    openOverlayId = null;
+  }
+  document.getElementById('scrim').addEventListener('click', function(){
+    if (openOverlayId === 'orderSheet' && (state.orderStep === 'processing' || state.orderStep === 'done')) return;
+    closeOverlay();
+  });
+
+  function confirmAction(title, body, confirmLabel, onConfirm){
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmBody').textContent = body;
+    document.getElementById('confirmOk').textContent = confirmLabel;
+    document.getElementById('confirmOk').onclick = function(){
+      closeOverlay();
+      onConfirm();
+    };
+    openOverlay('confirmDialog');
+  }
+  document.getElementById('confirmCancel').addEventListener('click', closeOverlay);
+
+  // ---------------- new roll sheet ----------------
+  var selectedDelay = 24;
+  function openNewRollSheet(){
+    document.getElementById('newRollName').value = 'Roll ' + String(state.nextRollNumber).padStart(2,'0');
+    selectedDelay = 24;
+    document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(o){ o.classList.toggle('active', o.getAttribute('data-delay')==='24'); });
+    openOverlay('newRollSheet');
+  }
+  document.getElementById('btnNewRoll').addEventListener('click', openNewRollSheet);
+  document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(o){ o.classList.remove('active'); });
+      opt.classList.add('active');
+      selectedDelay = parseInt(opt.getAttribute('data-delay'),10);
+    });
+  });
+  document.getElementById('btnCreateRoll').addEventListener('click', function(){
+    var name = document.getElementById('newRollName').value.trim() || ('Roll ' + String(state.nextRollNumber).padStart(2,'0'));
+    var roll = {
+      id: 'r' + (state.nextRollNumber),
+      number: state.nextRollNumber,
+      name: name,
+      exposuresTotal: EXPOSURES_TOTAL,
+      photos: [],
+      revealDelayHours: selectedDelay,
+      createdAtMs: nowMs(),
+      filledAtMs: null,
+      status: 'active'
+    };
+    state.nextRollNumber++;
+    state.rolls.push(roll);
+    state.activeRollId = roll.id;
+    closeOverlay();
+    renderHome();
+    enterCamera(roll.id);
+  });
+
+  // ---------------- full camera ----------------
+  function enterCamera(rollId){
+    state.currentCameraRollId = rollId;
+    var roll = getRoll(rollId);
+    document.getElementById('camCounterFilled').textContent = roll.photos.length;
+    document.getElementById('camRollName').textContent = roll.name;
+    showView('camera');
+    fitViewfinder();
+    setTimeout(fitViewfinder, 50);
+  }
+
+  var VIEWFINDER_RATIO = 1 / 1.43; // width:height — photos are 1:1.43, taller than wide
+  function fitViewfinder(){
+    var wrap = document.getElementById('viewfinderWrap');
+    var vf = document.getElementById('viewfinder');
+    if (!wrap || !vf) return;
+    var cs = getComputedStyle(wrap);
+    var padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+    var padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    var availW = wrap.clientWidth - padX;
+    var availH = wrap.clientHeight - padY;
+    if (availW <= 0 || availH <= 0) return;
+    var w = availW;
+    var h = w / VIEWFINDER_RATIO;
+    if (h > availH){
+      h = availH;
+      w = h * VIEWFINDER_RATIO;
+    }
+    vf.style.width = w + 'px';
+    vf.style.height = h + 'px';
+  }
+  window.addEventListener('resize', fitViewfinder);
+  document.getElementById('btnCloseCamera').addEventListener('click', function(){
+    renderHome();
+    showView('home');
+  });
+
+  function startCamera(){
+    var video = document.getElementById('video');
+    var fallbackNote = document.getElementById('cameraFallbackNote');
+    document.getElementById('capturedPreview').classList.add('hidden');
+    video.classList.remove('hidden');
+    fallbackNote.classList.add('hidden');
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio:false })
+        .then(function(stream){
+          state.stream = stream;
+          video.srcObject = stream;
+        })
+        .catch(function(){
+          video.classList.add('hidden');
+          fallbackNote.classList.remove('hidden');
+        });
+    } else {
+      video.classList.add('hidden');
+      fallbackNote.classList.remove('hidden');
+    }
+  }
+  function stopCamera(){
+    if (state.stream){
+      state.stream.getTracks().forEach(function(t){ t.stop(); });
+      state.stream = null;
+    }
+  }
+
+  function cropToDataUrl(sourceEl, srcW, srcH, cb){
+    var targetRatio = 1.43;
+    var srcRatio = srcW/srcH;
+    var sx,sy,sw,sh;
+    if (srcRatio > targetRatio){ sh = srcH; sw = sh*targetRatio; sx = (srcW-sw)/2; sy = 0; }
+    else { sw = srcW; sh = sw/targetRatio; sx = 0; sy = (srcH-sh)/2; }
+    var canvas = document.createElement('canvas');
+    canvas.width = 600; canvas.height = Math.round(600/targetRatio);
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(sourceEl, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    cb(canvas.toDataURL('image/jpeg', 0.82));
+  }
+
+  function commitCapture(dataUrl){
+    var roll = getRoll(state.currentCameraRollId);
+    if (!roll || roll.photos.length >= roll.exposuresTotal) return;
+    roll.photos.push({ id:'p'+Date.now(), url:dataUrl, capturedAtMs: nowMs() });
+    document.getElementById('camCounterFilled').textContent = roll.photos.length;
+
+    var flash = document.getElementById('flashEl');
+    flash.classList.remove('hit'); void flash.offsetWidth; flash.classList.add('hit');
+
+    if (roll.photos.length >= roll.exposuresTotal){
+      roll.status = 'full';
+      roll.filledAtMs = nowMs();
+      if (state.activeRollId === roll.id) state.activeRollId = null;
+      stopCamera();
+      setTimeout(function(){ enterCeremony(roll.id); }, 550);
+    }
+  }
+
+  document.getElementById('btnShutter').addEventListener('click', function(){
+    var roll = getRoll(state.currentCameraRollId);
+    if (!roll || roll.photos.length >= roll.exposuresTotal) return;
+    var video = document.getElementById('video');
+    if (video.srcObject && video.videoWidth){
+      cropToDataUrl(video, video.videoWidth, video.videoHeight, commitCapture);
+    } else {
+      document.getElementById('fileFallback').click();
+    }
+  });
+  document.getElementById('fileFallback').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var img = new Image();
+    img.onload = function(){ cropToDataUrl(img, img.naturalWidth, img.naturalHeight, commitCapture); };
+    img.src = URL.createObjectURL(file);
+    e.target.value = '';
+  });
+
+  // ---------------- ceremony ----------------
+  function enterCeremony(rollId){
+    state.currentCeremonyRollId = rollId;
+    renderCeremony();
+    showView('ceremony');
+  }
+  function renderCeremony(){
+    var roll = getRoll(state.currentCeremonyRollId);
+    if (!roll) return;
+    refreshDerivedStatus(roll);
+    var visual = document.getElementById('ceremonyVisual');
+    var statusLine = document.getElementById('ceremonyStatusLine');
+    var headline = document.getElementById('ceremonyHeadline');
+    var body = document.getElementById('ceremonyBody');
+    var cta = document.getElementById('ceremonyCta');
+    var name = roll.name.toLowerCase();
+
+    if (roll.status === 'developed'){
+      visual.className = 'ceremony-visual developed';
+      visual.innerHTML = '<img src="'+ (roll.photos[0] ? roll.photos[0].url : '') +'" alt="" onerror="this.parentNode.style.background=\'var(--grape)\'; this.remove();" />';
+      statusLine.textContent = 'DEVELOPED';
+      statusLine.style.color = 'var(--spark)';
+      headline.textContent = name + ' is ready.';
+      body.textContent = '27 frames, printed nowhere yet. go see them.';
+      cta.className = 'btn btn-primary';
+      cta.disabled = false;
+      cta.textContent = 'back to camera';
+      cta.onclick = function(){ renderHome(); showView('home'); };
+    } else {
+      var remain = (roll.filledAtMs + roll.revealDelayHours*3600*1000) - nowMs();
+      visual.className = 'ceremony-visual';
+      visual.innerHTML = '';
+      statusLine.textContent = 'DEVELOPING · ' + fmtCountdown(remain);
+      statusLine.style.color = 'var(--acid)';
+      headline.textContent = name + ' is developing.';
+      body.textContent = "you can't see your photos yet. that is the whole idea.";
+      cta.className = 'btn btn-disabled';
+      cta.disabled = true;
+      cta.textContent = 'view roll';
+      cta.onclick = null;
+    }
+  }
+  document.getElementById('ceremonyDevSkip').addEventListener('click', function(){
+    var roll = getRoll(state.currentCeremonyRollId);
+    if (!roll) return;
+    roll.filledAtMs = nowMs() - (roll.revealDelayHours*3600*1000 + 1000);
+    renderCeremony();
+  });
+
+  // ---------------- misc helpers ----------------
+  function fmtReadyBy(ms){
+    var d = new Date(ms);
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var h = d.getHours();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    var mins = d.getMinutes();
+    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ' · ' + h12 + ':' + (mins<10?'0':'') + mins + ' ' + ampm;
+  }
+  function genPickupCode(){
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var s = '';
+    for (var i=0;i<4;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    return 'LN-' + s;
+  }
+
+  // ---------------- print tray ----------------
+  function isQueued(photoId){ return state.printTray.some(function(p){ return p.photoId===photoId; }); }
+  function togglePrint(rollId, photoId, url){
+    var idx = state.printTray.findIndex(function(p){ return p.photoId===photoId; });
+    if (idx >= 0){
+      state.printTray.splice(idx,1);
+    } else {
+      if (state.printTray.length >= TRAY_SIZE){ showToast('tray is full · 12/12'); return; }
+      state.printTray.push({ rollId: rollId, photoId: photoId, url: url });
+    }
+    refreshAllViews();
+  }
+  function refreshAllViews(){
+    if (!document.getElementById('view-gallery').classList.contains('hidden')) renderGallery();
+    if (!document.getElementById('view-photo').classList.contains('hidden')) renderSinglePhoto();
+    renderPrintLab();
+  }
+
+  // ---------------- gallery ----------------
+  function galleryEligibleRolls(){
+    return state.rolls.filter(function(r){ return r.photos.length > 0; }).sort(function(a,b){ return a.number-b.number; });
+  }
+  function enterGallery(rollId){
+    state.galleryFilter = rollId || 'all';
+    renderGallery();
+    showView('gallery');
+  }
+  document.getElementById('btnAllPhotos').addEventListener('click', function(){ enterGallery('all'); });
+  document.getElementById('btnGalleryBack').addEventListener('click', function(){ renderHome(); showView('home'); });
+
+  function renderGallery(){
+    var rolls = galleryEligibleRolls();
+    rolls.forEach(refreshDerivedStatus);
+    var chips = document.getElementById('galleryChips');
+    chips.innerHTML = '';
+    var allChip = document.createElement('div');
+    allChip.className = 'chip-pill' + (state.galleryFilter==='all' ? ' active':'');
+    allChip.textContent = 'all';
+    allChip.addEventListener('click', function(){ state.galleryFilter='all'; renderGallery(); });
+    chips.appendChild(allChip);
+    rolls.forEach(function(r){
+      var c = document.createElement('div');
+      c.className = 'chip-pill' + (state.galleryFilter===r.id ? ' active':'');
+      c.textContent = r.name;
+      c.addEventListener('click', function(){ state.galleryFilter=r.id; renderGallery(); });
+      chips.appendChild(c);
+    });
+
+    var grid = document.getElementById('galleryGrid');
+    grid.innerHTML = '';
+    var rollsToShow = state.galleryFilter==='all' ? rolls : rolls.filter(function(r){ return r.id===state.galleryFilter; });
+    var items = [];
+    rollsToShow.forEach(function(r){
+      r.photos.forEach(function(p, idx){
+        items.push({ roll: r, photo: p, idx: idx });
+      });
+    });
+    if (state.galleryFilter === 'all'){
+      items.sort(function(a,b){ return b.photo.capturedAtMs - a.photo.capturedAtMs; });
+    }
+    items.forEach(function(item){
+      var r = item.roll, p = item.photo, idx = item.idx;
+      var tile = document.createElement('button');
+        tile.className = 'photo-tile';
+        if (r.status === 'developed'){
+          var img = document.createElement('img');
+          img.src = p.url; img.alt = '';
+          img.onerror = function(){ tile.style.background = 'var(--grape)'; img.remove(); };
+          tile.appendChild(img);
+          var check = document.createElement('div');
+          check.className = 'print-check' + (isQueued(p.id) ? ' queued':'');
+          check.textContent = isQueued(p.id) ? '✓' : '+';
+          check.addEventListener('click', function(e){ e.stopPropagation(); togglePrint(r.id, p.id, p.url); });
+          tile.appendChild(check);
+          tile.addEventListener('click', function(){ enterPhoto(r.id, idx); });
+        } else {
+          var blurImg = document.createElement('img');
+          blurImg.className = 'blurred-photo';
+          blurImg.src = p.url; blurImg.alt = '';
+          blurImg.onerror = function(){ blurImg.remove(); };
+          tile.appendChild(blurImg);
+
+          var lock = document.createElement('div');
+          lock.className = 'lock-overlay';
+          var lbl = document.createElement('div');
+          lbl.className = 'label'; lbl.style.color = 'var(--muted-inverse)';
+          lbl.textContent = r.status === 'full' ? 'developing' : 'still shooting';
+          lock.appendChild(lbl);
+          if (r.status === 'full'){
+            var sl = document.createElement('div');
+            sl.className = 'status-line';
+            var remain = (r.filledAtMs + r.revealDelayHours*3600*1000) - nowMs();
+            sl.textContent = fmtCountdown(remain);
+            lock.appendChild(sl);
+          }
+          tile.appendChild(lock);
+          tile.disabled = true;
+        }
+        grid.appendChild(tile);
+    });
+    if (grid.children.length === 0){
+      var empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.style.gridColumn = '1 / -1';
+      empty.innerHTML = '<div class="display-sm" style="font-size:17px;">nothing here yet.</div><p class="body-txt">shoot and finish a roll to see it in the gallery.</p>';
+      grid.appendChild(empty);
+    }
+
+    updateTrayStatusBar('galleryTrayCount', 'btnGoToPrintLab');
+  }
+  function updateTrayStatusBar(countId, btnId){
+    var full = state.printTray.length === TRAY_SIZE;
+    var countEl = document.getElementById(countId);
+    var btnEl = document.getElementById(btnId);
+    countEl.textContent = state.printTray.length + '/' + TRAY_SIZE + ' added to print tray';
+    countEl.classList.toggle('hidden', full);
+    btnEl.classList.toggle('hidden', !full);
+  }
+  function goToPrintLab(){
+    renderPrintLab();
+    showView('print');
+  }
+  document.getElementById('btnGoToPrintLab').addEventListener('click', goToPrintLab);
+  document.getElementById('btnPhotoGoToPrintLab').addEventListener('click', goToPrintLab);
+
+  // ---------------- single photo ----------------
+  function enterPhoto(rollId, index){
+    state.photoRollId = rollId;
+    state.photoIndex = index;
+    renderSinglePhoto();
+    showView('photo');
+  }
+  document.getElementById('btnPhotoBack').addEventListener('click', function(){ renderGallery(); showView('gallery'); });
+
+  function renderSinglePhoto(){
+    var roll = getRoll(state.photoRollId);
+    if (!roll || !roll.photos.length) return;
+    var photo = roll.photos[state.photoIndex];
+    document.getElementById('photoPosition').textContent = (state.photoIndex+1) + '/' + roll.photos.length;
+    var img = document.getElementById('photoHeroImg');
+    img.src = photo.url;
+    img.onerror = function(){ img.style.background = 'var(--grape)'; };
+
+    var strip = document.getElementById('photoFilmstrip');
+    strip.innerHTML = '';
+    roll.photos.forEach(function(p, i){
+      var t = document.createElement('img');
+      t.className = 'fthumb' + (i===state.photoIndex ? ' active':'');
+      t.src = p.url; t.alt = '';
+      t.onerror = function(){ t.style.background = 'var(--track)'; };
+      t.addEventListener('click', function(){ state.photoIndex = i; renderSinglePhoto(); });
+      strip.appendChild(t);
+    });
+
+    var toggleBtn = document.getElementById('btnPhotoPrintToggle');
+    if (isQueued(photo.id)){
+      toggleBtn.className = 'btn btn-primary';
+      toggleBtn.textContent = 'queued for print ✓';
+    } else {
+      toggleBtn.className = 'btn btn-secondary';
+      toggleBtn.textContent = 'add to print tray';
+    }
+
+    updateTrayStatusBar('photoTrayCount', 'btnPhotoGoToPrintLab');
+  }
+  document.getElementById('btnPhotoPrintToggle').addEventListener('click', function(){
+    var roll = getRoll(state.photoRollId);
+    var photo = roll.photos[state.photoIndex];
+    togglePrint(roll.id, photo.id, photo.url);
+  });
+  document.getElementById('btnPhotoRemove').addEventListener('click', function(){
+    confirmAction("remove this frame?", "this can't be undone.", 'remove frame', function(){
+      var roll = getRoll(state.photoRollId);
+      var photo = roll.photos[state.photoIndex];
+      var trayIdx = state.printTray.findIndex(function(p){ return p.photoId===photo.id; });
+      if (trayIdx >= 0) state.printTray.splice(trayIdx,1);
+      roll.photos.splice(state.photoIndex,1);
+      if (roll.photos.length === 0){
+        renderGallery(); showView('gallery');
+      } else {
+        if (state.photoIndex >= roll.photos.length) state.photoIndex = roll.photos.length-1;
+        renderSinglePhoto();
+      }
+      renderPrintLab();
+    });
+  });
+
+  // ---------------- print lab ----------------
+  document.querySelectorAll('#finishToggleRow .toggle-opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('#finishToggleRow .toggle-opt').forEach(function(o){ o.classList.remove('active'); });
+      opt.classList.add('active');
+      state.finish = opt.getAttribute('data-finish');
+    });
+  });
+
+  function renderPrintLab(){
+    state.rolls.forEach(refreshDerivedStatus);
+    var hasAnyDeveloped = state.rolls.some(function(r){ return r.status==='developed' && r.photos.length>0; });
+    var hasHistory = state.orders.length>0;
+    var showFull = hasAnyDeveloped || state.printTray.length>0 || hasHistory;
+    document.getElementById('labEmpty').classList.toggle('hidden', showFull);
+    document.getElementById('labFull').classList.toggle('hidden', !showFull);
+    if (!showFull) return;
+
+    document.getElementById('labSlotStat').textContent = state.printTray.length + ' OF ' + TRAY_SIZE + ' SLOTS MARKED';
+
+    var printingWrap = document.getElementById('printingSection');
+    printingWrap.innerHTML = '';
+    var active = state.orders.filter(function(o){ return o.status !== 'pickedUp'; });
+    if (active.length){
+      var heading = document.createElement('div');
+      heading.className = 'section-heading';
+      heading.innerHTML = '<div class="label">CURRENTLY PRINTING</div>';
+      printingWrap.appendChild(heading);
+      active.forEach(function(o){
+        var ready = nowMs() >= o.readyAtMs;
+        var card = document.createElement('div');
+        card.className = 'order-card';
+        var head = document.createElement('div');
+        head.className = 'order-card-head';
+        var left = document.createElement('div');
+        left.innerHTML = '<div class="display-sm" style="font-size:15px;">'+o.name.toLowerCase()+'</div><div class="label" style="margin-top:2px;">'+o.pickupCode+' · '+o.location.toUpperCase()+'</div>';
+        var tag = document.createElement('div');
+        tag.className = ready ? 'tag tag-spark' : 'tag tag-developing';
+        tag.textContent = ready ? 'ready' : fmtCountdown(o.readyAtMs - nowMs());
+        head.appendChild(left); head.appendChild(tag);
+        card.appendChild(head);
+        if (!ready){
+          var skip = document.createElement('button');
+          skip.className = 'dev-link';
+          skip.style.color = 'var(--muted)';
+          skip.style.alignSelf = 'flex-start';
+          skip.style.marginTop = '-4px';
+          skip.textContent = '→ simulate time passing (dev)';
+          skip.addEventListener('click', function(e){
+            e.stopPropagation();
+            o.readyAtMs = nowMs() - 1000;
+            renderPrintLab();
+          });
+          card.appendChild(skip);
+        }
+        if (ready){
+          var pickedBtn = document.createElement('button');
+          pickedBtn.className = 'btn btn-secondary btn-small';
+          pickedBtn.textContent = 'mark picked up';
+          pickedBtn.addEventListener('click', function(e){
+            e.stopPropagation();
+            confirmAction('mark as picked up?', o.name + ' · ' + o.pickupCode, 'picked up', function(){
+              o.status = 'pickedUp';
+              renderPrintLab();
+            });
+          });
+          card.appendChild(pickedBtn);
+        }
+        card.addEventListener('click', function(){ openOrderPhotos(o); });
+        printingWrap.appendChild(card);
+      });
+    }
+
+    var grid = document.getElementById('trayGrid');
+    grid.innerHTML = '';
+    for (var i=0;i<TRAY_SIZE;i++){
+      var slot = document.createElement('div');
+      var item = state.printTray[i];
+      if (item){
+        slot.className = 'tray-slot filled';
+        var img = document.createElement('img');
+        img.src = item.url; img.alt = '';
+        img.onerror = function(){ this.parentNode.style.background = 'var(--grape)'; this.remove(); };
+        slot.appendChild(img);
+        var rm = document.createElement('button');
+        rm.className = 'slot-remove';
+        rm.textContent = '✕';
+        rm.addEventListener('click', (function(photoId){
+          return function(){
+            confirmAction('remove from tray?', "this frame will need to be re-added to print it.", 'remove', function(){
+              var idx = state.printTray.findIndex(function(p){ return p.photoId===photoId; });
+              if (idx>=0) state.printTray.splice(idx,1);
+              refreshAllViews();
+            });
+          };
+        })(item.photoId));
+        slot.appendChild(rm);
+      } else {
+        slot.className = 'tray-slot';
+      }
+      grid.appendChild(slot);
+    }
+
+    var cta = document.getElementById('btnPrintMemories');
+    cta.style.width = '100%';
+    if (state.printTray.length === TRAY_SIZE){
+      cta.className = 'btn btn-primary'; cta.disabled = false;
+    } else {
+      cta.className = 'btn btn-disabled'; cta.disabled = true;
+    }
+
+    var recentWrap = document.getElementById('recentSection');
+    var recentList = document.getElementById('recentList');
+    var picked = state.orders.filter(function(o){ return o.status==='pickedUp'; });
+    recentWrap.style.display = picked.length ? 'flex' : 'none';
+    recentList.innerHTML = '';
+    picked.forEach(function(o){
+      var row = document.createElement('div');
+      row.className = 'recent-row';
+      row.innerHTML = '<div class="body-txt" style="color:var(--midnight)">'+o.name.toLowerCase()+'</div><div class="label">PICKED UP</div>';
+      recentList.appendChild(row);
+    });
+  }
+
+  document.getElementById('btnPrintMemories').addEventListener('click', function(){
+    if (state.printTray.length !== TRAY_SIZE) return;
+    state.draftOrder = { name:'', location:null, paymentMethod:null };
+    state.orderStep = 'fulfillment';
+    renderOrderStep();
+    openOverlay('orderSheet');
+  });
+
+  function openOrderPhotos(o){
+    document.getElementById('opAlbumName').textContent = o.name.toLowerCase();
+    document.getElementById('opMeta').textContent = o.pickupCode + ' · ' + o.location.toUpperCase();
+    var grid = document.getElementById('opGrid');
+    grid.innerHTML = '';
+    o.photos.forEach(function(p){
+      var img = document.createElement('img');
+      img.src = p.url; img.alt = '';
+      img.onerror = function(){ img.style.background = 'var(--grape)'; };
+      grid.appendChild(img);
+    });
+    openOverlay('orderPhotosSheet');
+  }
+
+  // ---------------- order flow ----------------
+  function orderStepBack(){
+    if (state.orderStep === 'payment'){ state.orderStep='fulfillment'; renderOrderStep(); }
+    else { closeOverlay(); }
+  }
+  document.getElementById('btnOrderBack').addEventListener('click', orderStepBack);
+
+  function renderOrderStep(){
+    var label = document.getElementById('orderStepLabel');
+    var back = document.getElementById('btnOrderBack');
+    var body = document.getElementById('orderSheetBody');
+    back.style.visibility = (state.orderStep==='processing'||state.orderStep==='done') ? 'hidden' : 'visible';
+
+    if (state.orderStep === 'fulfillment'){
+      label.textContent = 'FULFILLMENT';
+      body.innerHTML =
+        '<div style="display:flex; flex-direction:column; gap:16px; padding-top:6px;">'+
+          '<div>'+
+            '<div class="field-label" style="margin-bottom:8px;">what should this album be called?</div>'+
+            '<input class="text-input" id="orderAlbumName" placeholder="Baguio 2026" />'+
+          '</div>'+
+          '<div>'+
+            '<div class="field-label" style="margin-bottom:8px;">fulfillment</div>'+
+            '<div class="toggle-row">'+
+              '<div class="toggle-opt active" data-fulfill="pickup">pickup</div>'+
+              '<div class="toggle-opt" style="opacity:0.5; cursor:not-allowed;">delivery · soon</div>'+
+            '</div>'+
+          '</div>'+
+          '<div>'+
+            '<div class="field-label" style="margin-bottom:8px;">choose a pickup location</div>'+
+            '<div class="toggle-row" id="locationToggleRow">'+
+              '<div class="toggle-opt" data-loc="One Ayala">one ayala</div>'+
+              '<div class="toggle-opt" data-loc="Trinoma">trinoma</div>'+
+            '</div>'+
+          '</div>'+
+          '<p class="body-txt" id="readyByNote" style="display:none;"></p>'+
+          '<button class="btn btn-disabled" id="btnFulfillNext" disabled style="width:100%;">next</button>'+
+        '</div>';
+      var nameInput = document.getElementById('orderAlbumName');
+      nameInput.value = state.draftOrder.name;
+      var nextBtn = document.getElementById('btnFulfillNext');
+      var note = document.getElementById('readyByNote');
+      function syncNext(){
+        var val = nameInput.value.trim();
+        var ready = !!val && !!state.draftOrder.location;
+        nextBtn.disabled = !ready;
+        nextBtn.className = ready ? 'btn btn-primary' : 'btn btn-disabled';
+        nextBtn.style.width = '100%';
+      }
+      nameInput.addEventListener('input', syncNext);
+      document.querySelectorAll('#locationToggleRow .toggle-opt').forEach(function(opt){
+        if (opt.getAttribute('data-loc') === state.draftOrder.location) opt.classList.add('active');
+        opt.addEventListener('click', function(){
+          document.querySelectorAll('#locationToggleRow .toggle-opt').forEach(function(o){ o.classList.remove('active'); });
+          opt.classList.add('active');
+          state.draftOrder.location = opt.getAttribute('data-loc');
+          note.style.display = 'block';
+          note.textContent = 'ready by ' + fmtReadyBy(nowMs() + ORDER_READY_HOURS*3600*1000);
+          syncNext();
+        });
+      });
+      if (state.draftOrder.location){
+        note.style.display = 'block';
+        note.textContent = 'ready by ' + fmtReadyBy(nowMs() + ORDER_READY_HOURS*3600*1000);
+      }
+      syncNext();
+      nextBtn.addEventListener('click', function(){
+        state.draftOrder.name = nameInput.value.trim();
+        state.orderStep = 'payment';
+        renderOrderStep();
+      });
+    }
+
+    else if (state.orderStep === 'payment'){
+      label.textContent = 'PAYMENT';
+      var total = TRAY_SIZE * PRICE_PER_PRINT;
+      body.innerHTML =
+        '<div style="display:flex; flex-direction:column; gap:14px; padding-top:6px;">'+
+          '<div class="card" style="cursor:default; flex-direction:column; align-items:stretch; gap:0;">'+
+            '<div class="summary-row"><span class="k">album</span><span>'+state.draftOrder.name.toLowerCase()+'</span></div>'+
+            '<div class="summary-row"><span class="k">photos</span><span>'+TRAY_SIZE+'</span></div>'+
+            '<div class="summary-row"><span class="k">finish</span><span>'+state.finish+'</span></div>'+
+            '<div class="summary-row"><span class="k">location</span><span>'+state.draftOrder.location+'</span></div>'+
+            '<div class="summary-row"><span class="k">ready by</span><span>'+fmtReadyBy(nowMs()+ORDER_READY_HOURS*3600*1000)+'</span></div>'+
+            '<div class="summary-row" style="font-weight:700;"><span class="k">total</span><span>₱'+total+'</span></div>'+
+          '</div>'+
+          '<div class="field-label">payment method</div>'+
+          '<div class="toggle-row" id="paymentToggleRow">'+
+            '<div class="toggle-opt" data-pay="card">card</div>'+
+            '<div class="toggle-opt" data-pay="gcash">gcash</div>'+
+            '<div class="toggle-opt" data-pay="maya">maya</div>'+
+          '</div>'+
+          '<button class="btn btn-disabled" id="btnPay" disabled style="width:100%;">pay ₱'+total+'</button>'+
+        '</div>';
+      var payBtn = document.getElementById('btnPay');
+      document.querySelectorAll('#paymentToggleRow .toggle-opt').forEach(function(opt){
+        if (opt.getAttribute('data-pay') === state.draftOrder.paymentMethod) opt.classList.add('active');
+        opt.addEventListener('click', function(){
+          document.querySelectorAll('#paymentToggleRow .toggle-opt').forEach(function(o){ o.classList.remove('active'); });
+          opt.classList.add('active');
+          state.draftOrder.paymentMethod = opt.getAttribute('data-pay');
+          payBtn.disabled = false; payBtn.className = 'btn btn-primary'; payBtn.style.width = '100%';
+        });
+      });
+      if (state.draftOrder.paymentMethod){ payBtn.disabled=false; payBtn.className='btn btn-primary'; payBtn.style.width='100%'; }
+      payBtn.addEventListener('click', function(){
+        state.orderStep = 'processing';
+        renderOrderStep();
+        runProcessing();
+      });
+    }
+
+    else if (state.orderStep === 'processing'){
+      label.textContent = 'PROCESSING';
+      body.innerHTML =
+        '<div style="display:flex; flex-direction:column; gap:16px; padding:20px 0 6px; align-items:center; text-align:center;">'+
+          '<div class="label">PLACING YOUR ORDER…</div>'+
+          '<div class="progress-track" style="width:100%;"><div class="progress-fill" id="orderProgressFill"></div></div>'+
+        '</div>';
+    }
+
+    else if (state.orderStep === 'done'){
+      label.textContent = 'DONE';
+      var o = state.orders[state.orders.length-1];
+      body.innerHTML =
+        '<div style="display:flex; flex-direction:column; gap:14px; padding:10px 0 6px; text-align:center; align-items:center;">'+
+          '<div class="status-line" style="color:var(--spark);">ORDER PLACED</div>'+
+          '<div class="display-sm" style="font-size:22px;">'+o.name.toLowerCase()+' is on its way.</div>'+
+          '<div class="card" style="cursor:default; flex-direction:column; align-items:stretch; gap:0; width:100%; text-align:left;">'+
+            '<div class="summary-row"><span class="k">photos</span><span>'+o.count+'</span></div>'+
+            '<div class="summary-row"><span class="k">location</span><span>'+o.location+'</span></div>'+
+            '<div class="summary-row"><span class="k">ready by</span><span>'+fmtReadyBy(o.readyAtMs)+'</span></div>'+
+            '<div class="summary-row"><span class="k">pickup code</span><span>'+o.pickupCode+'</span></div>'+
+          '</div>'+
+          '<button class="btn btn-primary" id="btnOrderDone" style="width:100%;">back to print lab</button>'+
+        '</div>';
+      document.getElementById('btnOrderDone').addEventListener('click', function(){
+        closeOverlay();
+        renderPrintLab();
+      });
+    }
+  }
+
+  function runProcessing(){
+    var fill = document.getElementById('orderProgressFill');
+    var pct = 0;
+    var timer = setInterval(function(){
+      pct += 5;
+      if (pct >= 100){
+        pct = 100;
+        fill.style.width = '100%';
+        clearInterval(timer);
+        setTimeout(function(){
+          placeOrder();
+          state.orderStep = 'done';
+          renderOrderStep();
+        }, 300);
+        return;
+      }
+      fill.style.width = pct + '%';
+    }, 90);
+  }
+
+  function placeOrder(){
+    var order = {
+      id: 'o'+Date.now(),
+      name: state.draftOrder.name,
+      count: TRAY_SIZE,
+      finish: state.finish,
+      location: state.draftOrder.location,
+      paymentMethod: state.draftOrder.paymentMethod,
+      placedAtMs: nowMs(),
+      readyAtMs: nowMs() + ORDER_READY_HOURS*3600*1000,
+      pickupCode: genPickupCode(),
+      photos: state.printTray.slice(),
+      status: 'processing'
+    };
+    state.orders.push(order);
+    state.printTray = [];
+  }
+
+  // ---------------- ticking ----------------
+  setInterval(function(){
+    var homeVisible = !document.getElementById('view-home').classList.contains('hidden');
+    var ceremonyVisible = !document.getElementById('view-ceremony').classList.contains('hidden');
+    var galleryVisible = !document.getElementById('view-gallery').classList.contains('hidden');
+    var printVisible = !document.getElementById('view-print').classList.contains('hidden');
+    if (homeVisible) renderHome();
+    if (ceremonyVisible) renderCeremony();
+    if (galleryVisible) renderGallery();
+    if (printVisible) renderPrintLab();
+  }, 1000);
+
+  // ---------------- responsive scale ----------------
+  function fitDevice(){
+    var wrap = document.getElementById('deviceWrap');
+    var device = document.getElementById('device');
+    var vw = window.innerWidth - 32;
+    var vh = window.innerHeight - 140;
+    var scale = Math.min(1, vw/393, vh/852);
+    if (!isFinite(scale) || scale <= 0.2) scale = 1;
+    device.style.transform = 'scale(' + scale + ')';
+    wrap.style.width = (393*scale) + 'px';
+    wrap.style.height = (852*scale) + 'px';
+  }
+  window.addEventListener('resize', fitDevice);
+  fitDevice();
+  setTimeout(fitDevice, 50);
+  setTimeout(fitDevice, 300);
+
+  renderHome();
+  renderPrintLab();
+  showView('home');
+})();
+</script>
+</body>
+</html>
