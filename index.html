@@ -466,6 +466,7 @@
   }
   .start-option-icon.acid{ background:var(--acid); color:var(--on-acid); }
   .start-option-icon.grape{ background:var(--grape); color:var(--on-grape); opacity:0.55; }
+  .start-option-icon.dimmed{ opacity:0.55; }
   .start-option-text{ flex:1 1 auto; display:flex; flex-direction:column; gap:2px; min-width:0; }
 
   /* ---------- Print Lab stub ---------- */
@@ -811,12 +812,12 @@
           <div class="sheet-handle"></div>
           <div class="label">START</div>
           <button class="start-option" id="startNewRoll">
-            <div class="start-option-icon acid">
+            <div class="start-option-icon acid" id="startNewRollIcon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg>
             </div>
             <div class="start-option-text">
               <div class="display-sm" style="font-size:16px;">new roll</div>
-              <div class="body-txt" style="color:var(--muted)">27 exposures, just for you.</div>
+              <div class="body-txt" style="color:var(--muted)" id="startNewRollDesc">27 exposures, just for you.</div>
             </div>
           </button>
           <button class="start-option" disabled>
@@ -932,6 +933,7 @@
 
   function getRoll(id){ return state.rolls.find(function(r){ return r.id===id; }); }
   function activeRoll(){ return state.activeRollId ? getRoll(state.activeRollId) : null; }
+  function findActiveShootingRoll(){ return state.rolls.find(function(r){ return r.status === 'active'; }); }
 
   function isDeveloped(roll){
     if (roll.status !== 'full' && roll.status !== 'developed') return false;
@@ -1063,8 +1065,20 @@
   document.getElementById('activeRollBlock').addEventListener('click', function(){
     var roll = activeRoll();
     if (roll) enterCamera(roll.id);
-    else openOverlay('startSheet');
+    else { renderStartSheet(); openOverlay('startSheet'); }
   });
+
+  function renderStartSheet(){
+    var blockingRoll = findActiveShootingRoll();
+    var opt = document.getElementById('startNewRoll');
+    var icon = document.getElementById('startNewRollIcon');
+    var desc = document.getElementById('startNewRollDesc');
+    opt.disabled = !!blockingRoll;
+    icon.classList.toggle('dimmed', !!blockingRoll);
+    desc.textContent = blockingRoll
+      ? 'finish ' + blockingRoll.name.toLowerCase() + ' first — ' + (blockingRoll.exposuresTotal - blockingRoll.photos.length) + ' shots left.'
+      : '27 exposures, just for you.';
+  }
 
   // ---------------- generic overlay (sheets + dialog) ----------------
   var openOverlayId = null;
@@ -1104,7 +1118,7 @@
     document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(o){ o.classList.toggle('active', o.getAttribute('data-delay')==='24'); });
     openOverlay('newRollSheet');
   }
-  document.getElementById('btnNewRoll').addEventListener('click', function(){ openOverlay('startSheet'); });
+  document.getElementById('btnNewRoll').addEventListener('click', function(){ renderStartSheet(); openOverlay('startSheet'); });
   document.getElementById('startNewRoll').addEventListener('click', openNewRollSheet);
   document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(opt){
     opt.addEventListener('click', function(){
@@ -1114,6 +1128,7 @@
     });
   });
   document.getElementById('btnCreateRoll').addEventListener('click', function(){
+    if (findActiveShootingRoll()) { closeOverlay(); return; }
     var name = document.getElementById('newRollName').value.trim() || ('Roll ' + String(state.nextRollNumber).padStart(2,'0'));
     var roll = {
       id: 'r' + (state.nextRollNumber),
