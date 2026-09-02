@@ -157,6 +157,7 @@
   }
 
   /* ---------- typography ---------- */
+  .display-lg{ font-family:var(--f-display); font-weight:800; font-size:56px; line-height:0.9; letter-spacing:-0.04em; text-transform:lowercase; margin:0; }
   .display-md{ font-family:var(--f-display); font-weight:800; font-size:34px; line-height:1.0; letter-spacing:-0.035em; text-transform:lowercase; text-wrap:balance; margin:0; }
   .display-sm{ font-family:var(--f-display); font-weight:800; font-size:20px; line-height:1.05; letter-spacing:-0.03em; text-transform:lowercase; margin:0; }
   .lead{ font-family:var(--f-body); font-size:16px; line-height:1.4; margin:0; color:var(--midnight); }
@@ -635,8 +636,39 @@
     <div class="device" id="device">
       <div class="screen" id="screen">
 
+        <!-- ============ SIGN UP ============ -->
+        <div class="view" id="view-signup">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="content" style="justify-content:center; gap:28px; padding-top:0;">
+            <div>
+              <div class="display-lg">linger</div>
+              <p class="lead" style="color:var(--muted); margin-top:8px;">27 frames. no peeking. let's go.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">name</div>
+                <input class="text-input" id="signupName" placeholder="Jordan Cruz" />
+              </div>
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">email</div>
+                <input class="text-input" id="signupEmail" type="email" placeholder="jordan@example.com" />
+              </div>
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">phone</div>
+                <input class="text-input" id="signupPhone" type="tel" placeholder="+63 917 123 4567" />
+              </div>
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">password</div>
+                <input class="text-input" id="signupPassword" type="password" placeholder="••••••••" />
+              </div>
+            </div>
+            <button class="btn btn-disabled" id="btnSignUp" disabled style="width:100%;">create account</button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
         <!-- ============ CAMERA HOME ============ -->
-        <div class="view" id="view-home">
+        <div class="view hidden" id="view-home">
           <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
           <div class="home-header">
             <div style="display:flex; align-items:center; gap:10px;">
@@ -1019,7 +1051,7 @@
   }
 
   // ---------------- views ----------------
-  var views = ['home','camera','ceremony','print','gallery','photo','account'];
+  var views = ['signup','home','camera','ceremony','print','gallery','photo','account'];
   function showView(name){
     views.forEach(function(v){
       document.getElementById('view-'+v).classList.toggle('hidden', v!==name);
@@ -1911,6 +1943,34 @@
     state.printTray = [];
   }
 
+  // ---------------- sign up ----------------
+  (function(){
+    var fields = ['signupName','signupEmail','signupPhone','signupPassword'];
+    var btn = document.getElementById('btnSignUp');
+    function syncSignupButton(){
+      var name = document.getElementById('signupName').value.trim();
+      var email = document.getElementById('signupEmail').value.trim();
+      var phone = document.getElementById('signupPhone').value.trim();
+      var password = document.getElementById('signupPassword').value;
+      var valid = !!name && email.indexOf('@') > 0 && !!phone && !!password;
+      btn.disabled = !valid;
+      btn.className = valid ? 'btn btn-primary' : 'btn btn-disabled';
+      btn.style.width = '100%';
+    }
+    fields.forEach(function(id){
+      document.getElementById(id).addEventListener('input', syncSignupButton);
+    });
+    btn.addEventListener('click', function(){
+      if (btn.disabled) return;
+      state.account.name = document.getElementById('signupName').value.trim();
+      state.account.email = document.getElementById('signupEmail').value.trim();
+      state.account.phone = document.getElementById('signupPhone').value.trim();
+      state.account.memberSinceMs = nowMs();
+      renderHome();
+      showView('home');
+    });
+  })();
+
   // ---------------- account ----------------
   var accountReturnTo = 'home';
   document.getElementById('btnAccount').addEventListener('click', function(){
@@ -2041,7 +2101,7 @@
 
   renderHome();
   renderPrintLab();
-  showView('home');
+  showView('signup');
 })();
 </script>
 </body>
