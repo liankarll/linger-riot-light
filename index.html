@@ -936,7 +936,10 @@
               <div id="orderHistoryList" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;"></div>
             </div>
 
-            <button class="btn btn-secondary" id="btnDeleteAccount" style="width:100%;">delete account</button>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <button class="btn btn-secondary" id="btnLogOut" style="width:100%;">log out</button>
+              <button class="btn btn-secondary" id="btnDeleteAccount" style="width:100%;">delete account</button>
+            </div>
           </div>
           <div class="home-indicator"></div>
         </div>
@@ -2190,6 +2193,11 @@
       ordList.appendChild(row);
     });
   }
+
+  document.getElementById('btnLogOut').addEventListener('click', function(){
+    resetLoginForm();
+    showView('login');
+  });
 
   document.getElementById('btnDeleteAccount').addEventListener('click', function(){
     confirmAction('delete your account?', "this removes your rolls, orders, and saved payment methods. this can't be undone.", 'delete account', function(){
