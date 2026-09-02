@@ -643,8 +643,46 @@
     <div class="device" id="device">
       <div class="screen" id="screen">
 
+        <!-- ============ WAITLIST ============ -->
+        <div class="view" id="view-waitlist">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="content" style="justify-content:center; gap:24px; padding-top:0;">
+            <div>
+              <div class="display-lg">linger</div>
+              <p class="lead" style="color:var(--muted); margin-top:8px;">invite-only beta. join the waitlist — we'll let you know when it's your turn.</p>
+            </div>
+
+            <div id="waitlistJoinSection" style="display:flex; flex-direction:column; gap:14px;">
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">email</div>
+                <input class="text-input" id="waitlistEmail" type="email" placeholder="jordan@example.com" />
+              </div>
+              <button class="btn btn-disabled" id="btnJoinWaitlist" disabled style="width:100%;">join the waitlist</button>
+            </div>
+
+            <div id="waitlistConfirmSection" class="hidden" style="display:flex; flex-direction:column; gap:10px; text-align:center;">
+              <div class="tag tag-spark" style="align-self:center;">you're on the list</div>
+              <p class="body-txt" id="waitlistConfirmCopy">we'll email you when it's your turn.</p>
+            </div>
+
+            <div id="waitlistCodeSection" class="hidden" style="display:flex; flex-direction:column; gap:14px;">
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">invite code</div>
+                <input class="text-input" id="inviteCode" placeholder="LNGR-XXXX" style="letter-spacing:0.1em; text-align:center; font-family:var(--f-mono);" />
+              </div>
+              <button class="btn btn-disabled" id="btnRedeemCode" disabled style="width:100%;">continue</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+              <button class="dev-link" id="btnToggleCodeForm" style="color:var(--muted); text-decoration:underline;">have an invite code?</button>
+              <button class="dev-link" id="btnWaitlistGoLogin" style="color:var(--muted); text-decoration:underline;">already have an account? log in</button>
+            </div>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
         <!-- ============ SIGN UP ============ -->
-        <div class="view" id="view-signup">
+        <div class="view hidden" id="view-signup">
           <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
           <div class="content" style="justify-content:center; gap:28px; padding-top:0;">
             <div>
@@ -1049,6 +1087,7 @@
   var EXPOSURES_TOTAL = 27;
 
   var state = {
+    waitlist: [],           // [{email, joinedAtMs}] — mock only, no backend
     rolls: [],
     nextRollNumber: 1,
     activeRollId: null,
@@ -1125,7 +1164,7 @@
   }
 
   // ---------------- views ----------------
-  var views = ['signup','login','verify','home','camera','ceremony','print','gallery','photo','account'];
+  var views = ['waitlist','signup','login','verify','home','camera','ceremony','print','gallery','photo','account'];
   function showView(name){
     views.forEach(function(v){
       document.getElementById('view-'+v).classList.toggle('hidden', v!==name);
@@ -2017,6 +2056,61 @@
     state.printTray = [];
   }
 
+  // ---------------- waitlist ----------------
+  var waitlistSection = 'join';
+  function showWaitlistSection(name){
+    waitlistSection = name;
+    ['Join','Confirm','Code'].forEach(function(s){
+      document.getElementById('waitlist'+s+'Section').classList.toggle('hidden', s.toLowerCase() !== name);
+    });
+    document.getElementById('btnToggleCodeForm').textContent = name === 'code' ? '← join the waitlist instead' : 'have an invite code?';
+  }
+  function resetWaitlistForm(){
+    document.getElementById('waitlistEmail').value = '';
+    document.getElementById('inviteCode').value = '';
+    syncJoinWaitlistButton();
+    syncRedeemCodeButton();
+    showWaitlistSection('join');
+  }
+  var waitlistEmailInput = document.getElementById('waitlistEmail');
+  var btnJoinWaitlist = document.getElementById('btnJoinWaitlist');
+  function syncJoinWaitlistButton(){
+    var valid = waitlistEmailInput.value.trim().indexOf('@') > 0;
+    btnJoinWaitlist.disabled = !valid;
+    btnJoinWaitlist.className = valid ? 'btn btn-primary' : 'btn btn-disabled';
+    btnJoinWaitlist.style.width = '100%';
+  }
+  waitlistEmailInput.addEventListener('input', syncJoinWaitlistButton);
+  btnJoinWaitlist.addEventListener('click', function(){
+    if (btnJoinWaitlist.disabled) return;
+    var email = waitlistEmailInput.value.trim();
+    state.waitlist.push({ email: email, joinedAtMs: nowMs() });
+    document.getElementById('waitlistConfirmCopy').textContent = "we'll email you at " + email + " when it's your turn.";
+    showWaitlistSection('confirm');
+  });
+
+  var inviteCodeInput = document.getElementById('inviteCode');
+  var btnRedeemCode = document.getElementById('btnRedeemCode');
+  function syncRedeemCodeButton(){
+    var valid = /^[A-Za-z0-9-]{4,}$/.test(inviteCodeInput.value.trim());
+    btnRedeemCode.disabled = !valid;
+    btnRedeemCode.className = valid ? 'btn btn-primary' : 'btn btn-disabled';
+    btnRedeemCode.style.width = '100%';
+  }
+  inviteCodeInput.addEventListener('input', syncRedeemCodeButton);
+  btnRedeemCode.addEventListener('click', function(){
+    if (btnRedeemCode.disabled) return;
+    showView('signup');
+  });
+
+  document.getElementById('btnToggleCodeForm').addEventListener('click', function(){
+    showWaitlistSection(waitlistSection === 'code' ? 'join' : 'code');
+  });
+  document.getElementById('btnWaitlistGoLogin').addEventListener('click', function(){
+    resetLoginForm();
+    showView('login');
+  });
+
   // ---------------- sign up ----------------
   (function(){
     var fields = ['signupName','signupEmail','signupPhone','signupPassword'];
@@ -2102,7 +2196,8 @@
     }
   });
   document.getElementById('btnGoSignup').addEventListener('click', function(){
-    showView('signup');
+    resetWaitlistForm();
+    showView('waitlist');
   });
 
   // ---------------- verify ----------------
@@ -2316,7 +2411,7 @@
 
   renderHome();
   renderPrintLab();
-  showView('signup');
+  showView('waitlist');
 })();
 </script>
 </body>
