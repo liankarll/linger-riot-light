@@ -663,6 +663,38 @@
               </div>
             </div>
             <button class="btn btn-disabled" id="btnSignUp" disabled style="width:100%;">create account</button>
+            <button class="dev-link" id="btnGoLogin" style="color:var(--muted); align-self:center; text-decoration:underline;">already have an account? log in</button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
+        <!-- ============ LOG IN ============ -->
+        <div class="view hidden" id="view-login">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="content" style="justify-content:center; gap:28px; padding-top:0;">
+            <div>
+              <div class="display-lg">linger</div>
+              <p class="lead" style="color:var(--muted); margin-top:8px;">welcome back.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">email or mobile number</div>
+                <input class="text-input" id="loginIdentifier" placeholder="jordan@example.com" />
+              </div>
+              <div>
+                <div class="field-label" style="margin-bottom:8px;">log in with</div>
+                <div class="toggle-row" id="loginMethodToggle">
+                  <div class="toggle-opt active" data-method="password">password</div>
+                  <div class="toggle-opt" data-method="code">a code</div>
+                </div>
+              </div>
+              <div id="loginPasswordField">
+                <div class="field-label" style="margin-bottom:8px;">password</div>
+                <input class="text-input" id="loginPassword" type="password" placeholder="••••••••" />
+              </div>
+            </div>
+            <button class="btn btn-disabled" id="btnLogin" disabled style="width:100%;">log in</button>
+            <button class="dev-link" id="btnGoSignup" style="color:var(--muted); align-self:center; text-decoration:underline;">don't have an account? sign up</button>
           </div>
           <div class="home-indicator"></div>
         </div>
@@ -1073,7 +1105,7 @@
   }
 
   // ---------------- views ----------------
-  var views = ['signup','verify','home','camera','ceremony','print','gallery','photo','account'];
+  var views = ['signup','login','verify','home','camera','ceremony','print','gallery','photo','account'];
   function showView(name){
     views.forEach(function(v){
       document.getElementById('view-'+v).classList.toggle('hidden', v!==name);
@@ -1988,6 +2020,7 @@
       state.account.email = document.getElementById('signupEmail').value.trim();
       state.account.phone = document.getElementById('signupPhone').value.trim();
       state.account.memberSinceMs = nowMs();
+      verifyReturnTo = 'signup';
       document.getElementById('verifyDestination').textContent = 'we sent a 6-digit code to ' + state.account.email + '.';
       document.getElementById('verifyCode').value = '';
       syncVerifyButton();
@@ -1995,7 +2028,65 @@
     });
   })();
 
+  document.getElementById('btnGoLogin').addEventListener('click', function(){
+    resetLoginForm();
+    showView('login');
+  });
+
+  // ---------------- log in ----------------
+  var loginMethod = 'password';
+  function resetLoginForm(){
+    loginMethod = 'password';
+    document.getElementById('loginIdentifier').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.querySelectorAll('#loginMethodToggle .toggle-opt').forEach(function(o){ o.classList.toggle('active', o.getAttribute('data-method')==='password'); });
+    document.getElementById('loginPasswordField').classList.remove('hidden');
+    syncLoginButton();
+  }
+  function syncLoginButton(){
+    var identifier = document.getElementById('loginIdentifier').value.trim();
+    var password = document.getElementById('loginPassword').value;
+    var valid = !!identifier && (loginMethod === 'code' || !!password);
+    var btn = document.getElementById('btnLogin');
+    btn.disabled = !valid;
+    btn.className = valid ? 'btn btn-primary' : 'btn btn-disabled';
+    btn.style.width = '100%';
+    btn.textContent = loginMethod === 'code' ? 'send code' : 'log in';
+  }
+  document.querySelectorAll('#loginMethodToggle .toggle-opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('#loginMethodToggle .toggle-opt').forEach(function(o){ o.classList.remove('active'); });
+      opt.classList.add('active');
+      loginMethod = opt.getAttribute('data-method');
+      document.getElementById('loginPasswordField').classList.toggle('hidden', loginMethod === 'code');
+      syncLoginButton();
+    });
+  });
+  document.getElementById('loginIdentifier').addEventListener('input', syncLoginButton);
+  document.getElementById('loginPassword').addEventListener('input', syncLoginButton);
+  document.getElementById('btnLogin').addEventListener('click', function(){
+    if (document.getElementById('btnLogin').disabled) return;
+    var identifier = document.getElementById('loginIdentifier').value.trim();
+    if (identifier.indexOf('@') > 0) state.account.email = identifier;
+    else state.account.phone = identifier;
+
+    if (loginMethod === 'code'){
+      verifyReturnTo = 'login';
+      document.getElementById('verifyDestination').textContent = 'we sent a 6-digit code to ' + identifier + '.';
+      document.getElementById('verifyCode').value = '';
+      syncVerifyButton();
+      showView('verify');
+    } else {
+      renderHome();
+      showView('home');
+    }
+  });
+  document.getElementById('btnGoSignup').addEventListener('click', function(){
+    showView('signup');
+  });
+
   // ---------------- verify ----------------
+  var verifyReturnTo = 'signup';
   var verifyCodeInput = document.getElementById('verifyCode');
   var btnVerify = document.getElementById('btnVerify');
   function syncVerifyButton(){
@@ -2011,7 +2102,7 @@
     showView('home');
   });
   document.getElementById('btnVerifyBack').addEventListener('click', function(){
-    showView('signup');
+    showView(verifyReturnTo === 'login' ? 'login' : 'signup');
   });
   document.getElementById('btnResendCode').addEventListener('click', function(){
     showToast('code resent.');
