@@ -667,6 +667,28 @@
           <div class="home-indicator"></div>
         </div>
 
+        <!-- ============ VERIFY ============ -->
+        <div class="view hidden" id="view-verify">
+          <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+          <div class="view-header">
+            <button class="icon-btn" id="btnVerifyBack">←</button>
+            <div class="label">VERIFY</div>
+          </div>
+          <div class="content" style="justify-content:center; gap:24px;">
+            <div>
+              <div class="display-md">check your inbox.</div>
+              <p class="body-txt" style="margin-top:8px;" id="verifyDestination">we sent a 6-digit code to jordan@example.com.</p>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:8px;">verification code</div>
+              <input class="text-input" id="verifyCode" inputmode="numeric" maxlength="6" placeholder="123456" style="letter-spacing:0.3em; text-align:center; font-family:var(--f-mono); font-size:20px;" />
+            </div>
+            <button class="btn btn-disabled" id="btnVerify" disabled style="width:100%;">verify &amp; continue</button>
+            <button class="dev-link" id="btnResendCode" style="color:var(--muted); align-self:center;">resend code</button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
         <!-- ============ CAMERA HOME ============ -->
         <div class="view hidden" id="view-home">
           <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
@@ -1051,7 +1073,7 @@
   }
 
   // ---------------- views ----------------
-  var views = ['signup','home','camera','ceremony','print','gallery','photo','account'];
+  var views = ['signup','verify','home','camera','ceremony','print','gallery','photo','account'];
   function showView(name){
     views.forEach(function(v){
       document.getElementById('view-'+v).classList.toggle('hidden', v!==name);
@@ -1966,10 +1988,34 @@
       state.account.email = document.getElementById('signupEmail').value.trim();
       state.account.phone = document.getElementById('signupPhone').value.trim();
       state.account.memberSinceMs = nowMs();
-      renderHome();
-      showView('home');
+      document.getElementById('verifyDestination').textContent = 'we sent a 6-digit code to ' + state.account.email + '.';
+      document.getElementById('verifyCode').value = '';
+      syncVerifyButton();
+      showView('verify');
     });
   })();
+
+  // ---------------- verify ----------------
+  var verifyCodeInput = document.getElementById('verifyCode');
+  var btnVerify = document.getElementById('btnVerify');
+  function syncVerifyButton(){
+    var valid = /^\d{6}$/.test(verifyCodeInput.value.trim());
+    btnVerify.disabled = !valid;
+    btnVerify.className = valid ? 'btn btn-primary' : 'btn btn-disabled';
+    btnVerify.style.width = '100%';
+  }
+  verifyCodeInput.addEventListener('input', syncVerifyButton);
+  btnVerify.addEventListener('click', function(){
+    if (btnVerify.disabled) return;
+    renderHome();
+    showView('home');
+  });
+  document.getElementById('btnVerifyBack').addEventListener('click', function(){
+    showView('signup');
+  });
+  document.getElementById('btnResendCode').addEventListener('click', function(){
+    showToast('code resent.');
+  });
 
   // ---------------- account ----------------
   var accountReturnTo = 'home';
