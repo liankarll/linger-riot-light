@@ -453,6 +453,21 @@
   }
   .toggle-opt.active{ background:var(--midnight); border-color:var(--midnight); color:var(--paper); }
 
+  .start-option{
+    display:flex; align-items:center; gap:14px; width:100%;
+    padding:14px; border-radius:var(--r-block); border:1px solid var(--hairline);
+    background:var(--paper); cursor:pointer; text-align:left; font-family:inherit;
+  }
+  .start-option:disabled{ cursor:not-allowed; border-style:dashed; }
+  .start-option:disabled .start-option-text{ opacity:0.55; }
+  .start-option-icon{
+    width:40px; height:40px; border-radius:var(--r-full); flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .start-option-icon.acid{ background:var(--acid); color:var(--on-acid); }
+  .start-option-icon.grape{ background:var(--grape); color:var(--on-grape); opacity:0.55; }
+  .start-option-text{ flex:1 1 auto; display:flex; flex-direction:column; gap:2px; min-width:0; }
+
   /* ---------- Print Lab stub ---------- */
   #view-print .content{ align-items:stretch; justify-content:flex-start; padding-top:8px; }
   .empty-state{
@@ -792,6 +807,30 @@
         <!-- ============ OVERLAYS ============ -->
         <div class="scrim" id="scrim"></div>
 
+        <div class="sheet" id="startSheet">
+          <div class="sheet-handle"></div>
+          <div class="label">START</div>
+          <button class="start-option" id="startNewRoll">
+            <div class="start-option-icon acid">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg>
+            </div>
+            <div class="start-option-text">
+              <div class="display-sm" style="font-size:16px;">new roll</div>
+              <div class="body-txt" style="color:var(--muted)">27 exposures, just for you.</div>
+            </div>
+          </button>
+          <button class="start-option" disabled>
+            <div class="start-option-icon grape">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6.4 4.5 2.6 4.5 5.3"/></svg>
+            </div>
+            <div class="start-option-text">
+              <div class="display-sm" style="font-size:16px;">new event</div>
+              <div class="body-txt" style="color:var(--muted)">shoot together, develop together.</div>
+            </div>
+            <div class="tag tag-archived">soon</div>
+          </button>
+        </div>
+
         <div class="sheet" id="newRollSheet">
           <div class="sheet-handle"></div>
           <div class="label">NEW ROLL</div>
@@ -1030,6 +1069,7 @@
   // ---------------- generic overlay (sheets + dialog) ----------------
   var openOverlayId = null;
   function openOverlay(id){
+    if (openOverlayId && openOverlayId !== id) document.getElementById(openOverlayId).classList.remove('show');
     document.getElementById('scrim').classList.add('show');
     document.getElementById(id).classList.add('show');
     openOverlayId = id;
@@ -1064,7 +1104,8 @@
     document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(o){ o.classList.toggle('active', o.getAttribute('data-delay')==='24'); });
     openOverlay('newRollSheet');
   }
-  document.getElementById('btnNewRoll').addEventListener('click', openNewRollSheet);
+  document.getElementById('btnNewRoll').addEventListener('click', function(){ openOverlay('startSheet'); });
+  document.getElementById('startNewRoll').addEventListener('click', openNewRollSheet);
   document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(opt){
     opt.addEventListener('click', function(){
       document.querySelectorAll('#delayToggleRow .toggle-opt').forEach(function(o){ o.classList.remove('active'); });
