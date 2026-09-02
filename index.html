@@ -597,6 +597,13 @@
   .recent-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-top:1px solid var(--hairline); }
   .recent-row:first-child{ border-top:none; }
   .payment-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid var(--hairline); border-radius:var(--r-inner); }
+  .avatar-upload{
+    width:56px; height:56px; border-radius:var(--r-full); flex:0 0 auto;
+    background:var(--track); border:1px solid var(--hairline);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--muted); cursor:pointer; overflow:hidden; padding:0;
+  }
+  .avatar-upload img{ width:100%; height:100%; object-fit:cover; display:block; }
 
   /* ---------- sheet header (order flow) ---------- */
   .sheet-header{ display:flex; align-items:center; gap:10px; }
@@ -915,11 +922,20 @@
           </div>
           <div class="content" style="gap:26px;">
             <div class="card" style="cursor:default; flex-direction:column; align-items:stretch; gap:2px;">
-              <div class="display-sm" style="font-size:19px;" id="acctName">Jordan Cruz</div>
+              <div style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
+                <button class="avatar-upload" id="btnAvatarUpload" aria-label="Change profile photo">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+                </button>
+                <div style="display:flex; flex-direction:column; gap:3px;">
+                  <div class="display-sm" style="font-size:19px;" id="acctName">Jordan Cruz</div>
+                  <button class="dev-link" id="btnChangePhoto" style="color:var(--acid); text-decoration:none;">change photo</button>
+                </div>
+              </div>
               <div class="body-txt" id="acctEmail">jordan@example.com</div>
               <div class="body-txt" id="acctPhone">+63 917 123 4567</div>
               <div class="label" style="margin-top:10px; color:var(--muted);" id="acctMemberSince">MEMBER SINCE AUGUST '26</div>
             </div>
+            <input type="file" id="avatarFileInput" accept="image/*" />
 
             <div>
               <div class="section-heading" style="margin-top:0;">
@@ -1055,7 +1071,8 @@
       name: 'Jordan Cruz',
       email: 'jordan.cruz@example.com',
       phone: '+63 917 123 4567',
-      memberSinceMs: Date.now() - 40*24*3600*1000
+      memberSinceMs: Date.now() - 40*24*3600*1000,
+      photoUrl: null
     },
     paymentMethods: [
       { id:'pm1', label:'Visa •••• 4242' },
@@ -2128,11 +2145,64 @@
     else { renderHome(); showView('home'); }
   });
 
+  var ACCOUNT_ICON_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
+  var AVATAR_ICON_SVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
+
+  function renderAccountIcons(){
+    ['btnAccount','btnAccount2'].forEach(function(id){
+      var btn = document.getElementById(id);
+      if (!btn) return;
+      if (state.account.photoUrl){
+        btn.innerHTML = '<img src="'+state.account.photoUrl+'" alt="" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />';
+        btn.style.padding = '0';
+        btn.style.overflow = 'hidden';
+      } else {
+        btn.innerHTML = ACCOUNT_ICON_SVG;
+        btn.style.padding = '';
+        btn.style.overflow = '';
+      }
+    });
+    var avatarBtn = document.getElementById('btnAvatarUpload');
+    if (avatarBtn){
+      avatarBtn.innerHTML = state.account.photoUrl
+        ? '<img src="'+state.account.photoUrl+'" alt="" />'
+        : AVATAR_ICON_SVG;
+    }
+  }
+
+  function cropSquareDataUrl(img, w, h, cb){
+    var size = Math.min(w, h);
+    var sx = (w - size) / 2, sy = (h - size) / 2;
+    var canvas = document.createElement('canvas');
+    canvas.width = 240; canvas.height = 240;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, sx, sy, size, size, 0, 0, 240, 240);
+    cb(canvas.toDataURL('image/jpeg', 0.85));
+  }
+
+  function openAvatarPicker(){ document.getElementById('avatarFileInput').click(); }
+  document.getElementById('btnAvatarUpload').addEventListener('click', openAvatarPicker);
+  document.getElementById('btnChangePhoto').addEventListener('click', openAvatarPicker);
+  document.getElementById('avatarFileInput').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var img = new Image();
+    img.onload = function(){
+      cropSquareDataUrl(img, img.naturalWidth, img.naturalHeight, function(dataUrl){
+        state.account.photoUrl = dataUrl;
+        renderAccountIcons();
+      });
+    };
+    img.src = URL.createObjectURL(file);
+    e.target.value = '';
+  });
+
   function renderAccount(){
     document.getElementById('acctName').textContent = state.account.name;
     document.getElementById('acctEmail').textContent = state.account.email;
     document.getElementById('acctPhone').textContent = state.account.phone;
     document.getElementById('acctMemberSince').textContent = 'MEMBER SINCE ' + fmtRollDate(state.account.memberSinceMs).toUpperCase();
+    renderAccountIcons();
 
     var pmList = document.getElementById('paymentMethodsList');
     pmList.innerHTML = '';
